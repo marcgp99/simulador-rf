@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -32,25 +32,39 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        /* Color Esmeralda para el interruptor */
         .toggle-checkbox:checked { right: 0; border-color: #10b981; }
         .toggle-checkbox:checked + .toggle-label { background-color: #10b981; }
         
-        /* Resplandor del botón en verde neón */
         .glow-hover:hover { box-shadow: 0 0 20px rgba(57, 255, 20, 0.4); }
         .neon-orange-pin { filter: drop-shadow(0 0 5px rgba(255, 126, 0, 0.8)); }
 
+        /* Etiqueta flotante GLOBAL (Centro de las parcelas) */
         .cobertura-badge {
-            background: rgba(15, 23, 42, 0.9) !important;
-            border: 1px solid rgba(255, 126, 0, 0.5) !important; 
-            color: #ff7e00 !important; 
-            font-weight: 700 !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            margin-top: -20px !important; 
+            margin-left: -50px !important; 
+        }
+
+        /* Etiqueta flotante LOCAL (Encima de los pines de antena) sin recuadros */
+        .pin-tooltip {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            text-align: center;
             font-family: 'Inter', sans-serif !important;
-            font-size: 13px !important; 
-            padding: 6px 10px !important;
-            border-radius: 6px !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.6) !important;
-            white-space: nowrap;
+            font-weight: 800 !important;
+            text-shadow: 
+                -1px -1px 0 #000,  
+                 1px -1px 0 #000,
+                -1px  1px 0 #000,
+                 1px  1px 0 #000,
+                 0px  4px 10px rgba(0,0,0,0.8) !important;
+        }
+        /* Elimina la flechita residual del tooltip de Leaflet */
+        .pin-tooltip::before {
+            display: none !important;
         }
     </style>
 </head>
@@ -148,7 +162,7 @@
 
             <div id="admin-tools" class="flex-shrink-0 pt-4 mt-2 border-t border-slate-700/50">
                 <button onclick="descargarHtmlParaCliente()" class="w-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white font-medium py-2.5 px-4 rounded-lg border border-slate-600 transition-all text-sm flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 00-5.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                     Generar Acceso Cliente (2 Usos)
                 </button>
             </div>
@@ -164,14 +178,15 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
+        const CLOUDRF_API_KEY = "40959-23f44ca37e5b1a3f4e6bc0fff08857cc7ae92e01";
         const EMBEDDED_DEMO_TOKEN = ""; 
         const LIMITE_USOS = 2;
         let simulaciones = []; 
         let simCounter = 1;
-        
-        const CLOUDRF_API_KEY = "40959-23f44ca37e5b1a3f4e6bc0fff08857cc7ae92e01";
 
         let geojsonKMLActual = null;
+        let etiquetaCoberturaActual = null; 
+        let capaKMLActual = null;
 
         if (EMBEDDED_DEMO_TOKEN !== "") {
             document.getElementById('admin-tools').style.display = 'none';
@@ -182,14 +197,11 @@
             actualizarBalanceCreditos();
         }
 
-        // MOTOR DE TELEMETRÍA API CON MEMORIA PERSISTENTE (LOCALSTORAGE)
         async function actualizarBalanceCreditos() {
             const statsContainer = document.getElementById('api-stats-container');
-            
             const renderizarPanel = (usados, limiteCred, storageUsado, limiteStorage) => {
                 const credPct = ((usados / limiteCred) * 100).toFixed(1);
                 const storPct = ((storageUsado / limiteStorage) * 100).toFixed(0);
-                
                 statsContainer.innerHTML = `
                     <div class="flex items-center gap-2.5 text-slate-300">
                         <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -215,20 +227,14 @@
                     let balance = data.balance || limit;
                     let storageUsed = data.storage?.used || 3907; 
                     let storageLimit = data.storage?.limit || 5000;
-                    
                     renderizarPanel(limit - balance, limit, storageUsed, storageLimit);
                 } else {
-                    throw new Error("CORS bloqueó la lectura directa.");
+                    throw new Error("CORS bloqueó");
                 }
             } catch (err) {
-                // FALLBACK CON MEMORIA PERSISTENTE
-                let limiteTotal = 5000;
-                let creditosBaseHistoricos = 315; 
-                
                 let guardados = localStorage.getItem('ixorigue_admin_creditos_usados');
                 let creditosReales = guardados ? parseInt(guardados) : creditosBaseHistoricos;
-                
-                renderizarPanel(creditosReales, limiteTotal, 3907, 5000);
+                renderizarPanel(creditosReales, 5000, 3907, 5000);
             }
         }
 
@@ -283,8 +289,7 @@
                 </svg>
             `,
             iconSize: [32, 42],
-            iconAnchor: [16, 41],
-            popupAnchor: [0, -38]
+            iconAnchor: [16, 41]
         });
 
         let inputMarker;
@@ -312,9 +317,6 @@
                 alert("No se encontraron coordenadas en el enlace.");
             }
         }
-
-        let capaKMLActual = null;
-        let etiquetaCoberturaActual = null;
 
         function cargarKML(event) {
             const file = event.target.files[0];
@@ -386,7 +388,7 @@
                         if (turfCoords[0][0] !== turfCoords[turfCoords.length-1][0] || turfCoords[0][1] !== turfCoords[turfCoords.length-1][1]) {
                             turfCoords.push(turfCoords[0]);
                         }
-                        featuresKML.push(turf.polygon([turfCoords]));
+                        featuresKMLKML = featuresKML.push(turf.polygon([turfCoords]));
                     }
                 }
             }
@@ -394,6 +396,7 @@
             if (poligonosEncontrados > 0 && boundsGeneral.isValid()) {
                 map.fitBounds(boundsGeneral);
                 geojsonKMLActual = featuresKML.length === 1 ? featuresKML[0] : turf.featureCollection(featuresKML);
+                actualizarInterfazGlobal();
             } else {
                 alert("No se pudo dibujar el polígono.");
                 geojsonKMLActual = null;
@@ -401,7 +404,26 @@
             document.getElementById('kml_upload').value = ''; 
         }
 
-        function calcularPorcentajeCoberturaReal(boundsSimulacion, imageUrl) {
+        function puntoCaeEnKML(pt) {
+            if (!geojsonKMLActual) return false;
+            if (geojsonKMLActual.type === 'FeatureCollection') {
+                for (let i = 0; i < geojsonKMLActual.features.length; i++) {
+                    if (turf.booleanPointInPolygon(pt, geojsonKMLActual.features[i])) return true;
+                }
+                return false;
+            }
+            return turf.booleanPointInPolygon(pt, geojsonKMLActual);
+        }
+
+        function obtenerMallaDinamica() {
+            const areaKm2 = turf.area(geojsonKMLActual) / 1000000;
+            let gridSpacing = Math.sqrt(areaKm2 / 3000); 
+            if (gridSpacing < 0.03) gridSpacing = 0.03;  
+            if (gridSpacing > 0.5) gridSpacing = 0.5;    
+            return turf.pointGrid(turf.bbox(geojsonKMLActual), gridSpacing, {units: 'kilometers'});
+        }
+
+        function calcularPorcentajeLocal(boundsSimulacion, imageUrl) {
             return new Promise((resolve) => {
                 if (!geojsonKMLActual || !boundsSimulacion) return resolve(null);
 
@@ -420,36 +442,25 @@
                         const s = boundsSimulacion[0][0], w = boundsSimulacion[0][1];
                         const n = boundsSimulacion[1][0], e = boundsSimulacion[1][1];
 
-                        const areaKm2 = turf.area(geojsonKMLActual) / 1000000;
-                        let gridSpacing = 0.03; 
-                        if (areaKm2 > 8) gridSpacing = 0.12; 
-
-                        const grid = turf.pointGrid(turf.bbox(geojsonKMLActual), gridSpacing, {units: 'kilometers'});
-                        
+                        const grid = obtenerMallaDinamica();
                         let puntosFinca = 0;
-                        let puntosConSenalReal = 0;
+                        let puntosConSenal = 0;
 
                         turf.featureEach(grid, function (pt) {
-                            if (turf.booleanPointInPolygon(pt, geojsonKMLActual)) {
+                            if (puntoCaeEnKML(pt)) {
                                 puntosFinca++;
-
                                 const ptLon = pt.geometry.coordinates[0];
                                 const ptLat = pt.geometry.coordinates[1];
 
                                 if (ptLat >= s && ptLat <= n && ptLon >= w && ptLon <= e) {
-                                    
                                     const pctX = (ptLon - w) / (e - w);
                                     const pctY = (n - ptLat) / (n - s); 
-
                                     const pixelX = Math.floor(pctX * img.width);
                                     const pixelY = Math.floor(pctY * img.height);
 
                                     if (pixelX >= 0 && pixelX < img.width && pixelY >= 0 && pixelY < img.height) {
-                                        const pixelData = ctx.getImageData(pixelX, pixelY, 1, 1).data;
-                                        const alpha = pixelData[3]; 
-
-                                        if (alpha > 10) {
-                                            puntosConSenalReal++;
+                                        if (ctx.getImageData(pixelX, pixelY, 1, 1).data[3] > 10) {
+                                            puntosConSenal++;
                                         }
                                     }
                                 }
@@ -457,35 +468,126 @@
                         });
 
                         if (puntosFinca === 0) return resolve(0);
-                        const porcentajeFinal = (puntosConSenalReal / puntosFinca) * 100;
-                        resolve(parseFloat(porcentajeFinal.toFixed(1)));
-
-                    } catch (err) {
-                        console.error("Error analizando matriz de píxeles:", err);
-                        resolve(null);
-                    }
+                        resolve(parseFloat(((puntosConSenal / puntosFinca) * 100).toFixed(1)));
+                    } catch (err) { resolve(null); }
                 };
-
-                img.onerror = function() {
-                    console.warn("No se pudo precargar la imagen para el escáner.");
-                    resolve(null);
-                };
+                img.onerror = () => resolve(null);
             });
         }
 
-        function renderizarHistorial() {
+        async function calcularPorcentajeGlobal() {
+            if (!geojsonKMLActual || simulaciones.length === 0) return null;
+
+            const activas = simulaciones.filter(s => s.visible && s.imageUrl && s.bounds);
+            if (activas.length === 0) return 0;
+
+            const canvases = await Promise.all(activas.map(sim => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.crossOrigin = "Anonymous";
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width; canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        resolve({ ctx, imgWidth: img.width, imgHeight: img.height, bounds: sim.bounds });
+                    };
+                    img.onerror = () => resolve(null);
+                    img.src = sim.imageUrl;
+                });
+            }));
+
+            const validCanvases = canvases.filter(c => c !== null);
+            if(validCanvases.length === 0) return 0;
+
+            const grid = obtenerMallaDinamica();
+            let puntosFinca = 0;
+            let puntosCubiertos = 0;
+
+            turf.featureEach(grid, function (pt) {
+                if (puntoCaeEnKML(pt)) {
+                    puntosFinca++;
+                    const ptLon = pt.geometry.coordinates[0];
+                    const ptLat = pt.geometry.coordinates[1];
+                    let cubierto = false;
+
+                    for (let c of validCanvases) {
+                        const s = c.bounds[0][0], w = c.bounds[0][1];
+                        const n = c.bounds[1][0], e = c.bounds[1][1];
+
+                        if (ptLat >= s && ptLat <= n && ptLon >= w && ptLon <= e) {
+                            const pctX = (ptLon - w) / (e - w);
+                            const pctY = (n - ptLat) / (n - s); 
+                            const pixelX = Math.floor(pctX * c.imgWidth);
+                            const pixelY = Math.floor(pctY * c.imgHeight);
+
+                            if (pixelX >= 0 && pixelX < c.imgWidth && pixelY >= 0 && pixelY < c.imgHeight) {
+                                if (c.ctx.getImageData(pixelX, pixelY, 1, 1).data[3] > 10) {
+                                    cubierto = true; break; 
+                                }
+                            }
+                        }
+                    }
+                    if (cubierto) puntosCubiertos++;
+                }
+            });
+
+            if (puntosFinca === 0) return 0;
+            return parseFloat(((puntosCubiertos / puntosFinca) * 100).toFixed(1));
+        }
+
+        async function actualizarInterfazGlobal() {
+            if (!geojsonKMLActual) {
+                if (etiquetaCoberturaActual) map.removeLayer(etiquetaCoberturaActual);
+                renderizarHistorial(null);
+                return;
+            }
+
+            const globalPct = await calcularPorcentajeGlobal();
+            if (etiquetaCoberturaActual) map.removeLayer(etiquetaCoberturaActual);
+
+            if (globalPct !== null) {
+                const centroTurf = turf.center(geojsonKMLActual);
+                const coordsCentro = [centroTurf.geometry.coordinates[1], centroTurf.geometry.coordinates[0]];
+
+                let htmlTxt = `<div style="text-align:center; font-family:'Inter',sans-serif; font-weight:800; text-shadow:-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0px 4px 10px rgba(0,0,0,0.8);">`;
+                htmlTxt += `<div style="color:#ef4444; font-size:17px;">Global: ${globalPct}%</div></div>`;
+
+                etiquetaCoberturaActual = L.marker(coordsCentro, {
+                    icon: L.divIcon({
+                        className: 'cobertura-badge',
+                        html: htmlTxt,
+                        iconSize: [0, 0],
+                        iconAnchor: [40, 20]
+                    })
+                }).addTo(map);
+            }
+            
+            renderizarHistorial(globalPct);
+        }
+
+        function renderizarHistorial(globalPct = null) {
             const lista = document.getElementById('simulationList');
             const msg = document.getElementById('emptyHistoryMsg');
             
-            if (msg) {
-                msg.style.display = simulaciones.length > 0 ? 'none' : 'block';
-            }
-            
+            if (msg) msg.style.display = simulaciones.length > 0 ? 'none' : 'block';
             lista.innerHTML = '';
             
             [...simulaciones].reverse().forEach(sim => {
                 const checkedStr = sim.visible ? 'checked' : '';
-                const txtCobertura = sim.coberturaPct !== null ? `<span class="text-[#ff7e00] font-bold ml-1">[Cob: ${sim.coberturaPct}%]</span>` : '';
+                
+                let statsHtml = '';
+                if (sim.coberturaLocal !== null && sim.coberturaLocal !== undefined) {
+                    statsHtml += `<span class="text-[#ff7e00] font-bold" title="Cobertura de esta zona">Loc: ${sim.coberturaLocal}%</span>`;
+                }
+                if (globalPct !== null && sim.visible) {
+                    if (statsHtml !== '') statsHtml += `<span class="text-slate-500 mx-1.5">|</span>`;
+                    statsHtml += `<span class="text-red-500 font-bold" title="Cobertura total acumulada">Glb: ${globalPct}%</span>`;
+                }
+                
+                if (statsHtml === '') {
+                    statsHtml = `<span class="text-slate-400 font-medium">Análisis de espectro listo</span>`;
+                }
                 
                 const itemHtml = `
                 <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 shadow-sm flex items-center justify-between gap-3 group hover:border-slate-600 transition-colors">
@@ -494,8 +596,8 @@
                         <label for="toggle_${sim.id}" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer transition-colors duration-300"></label>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-slate-200 truncate" title="${sim.name}">${sim.name} ${txtCobertura}</p>
-                        <p class="text-[11px] text-slate-400 font-mono mt-0.5">Frq: ${sim.freq} | Alt: ${sim.alt}m</p>
+                        <p class="text-sm font-semibold text-slate-200 truncate" title="${sim.name}">${sim.name}</p>
+                        <div class="text-[11px] mt-0.5">${statsHtml}</div>
                     </div>
                     <a href="${sim.kmz}" target="_blank" title="Descargar KMZ" class="bg-slate-700 hover:bg-green-600 text-slate-300 hover:text-white p-2 rounded-md transition-colors flex-shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -505,17 +607,16 @@
             });
         }
 
-        function toggleCapa(id, isVisible) {
+        async function toggleCapa(id, isVisible) {
             const sim = simulaciones.find(s => s.id === id);
             if (sim && sim.layerGroup) {
                 sim.visible = isVisible;
-                if (isVisible) {
-                    sim.layerGroup.addTo(map);
-                    if (sim.badgeMarker) sim.badgeMarker.addTo(map);
-                } else {
-                    map.removeLayer(sim.layerGroup);
-                    if (sim.badgeMarker) map.removeLayer(sim.badgeMarker);
-                }
+                if (isVisible) map.addLayer(sim.layerGroup);
+                else map.removeLayer(sim.layerGroup);
+                
+                document.getElementById('loader').classList.remove('hidden');
+                await actualizarInterfazGlobal(); 
+                document.getElementById('loader').classList.add('hidden');
             }
         }
         
@@ -566,17 +667,20 @@
                         localStorage.setItem('uso_demo_' + EMBEDDED_DEMO_TOKEN, usos);
                         actualizarBannerCliente(usos);
                     } else {
-                        // AQUÍ GUARDAMOS EL +1 EN LA MEMORIA DEL NAVEGADOR
                         let guardados = localStorage.getItem('ixorigue_admin_creditos_usados');
                         let contadorReal = guardados ? parseInt(guardados) : 315;
                         localStorage.setItem('ixorigue_admin_creditos_usados', contadorReal + 1);
-                        
                         actualizarBalanceCreditos();
                     }
 
                     let elementosGrupo = [];
-                    let pinSimulacion = L.marker([parseFloat(lat), parseFloat(lon)], {icon: neonOrangeIcon})
-                                         .bindPopup(`<div class="font-sans text-slate-800"><b>Análisis ${simCounter}</b><br><span class="text-slate-500">Freq: ${freq} MHz | Alt: ${txHeight}m</span></div>`);
+                    let pinSimulacion = L.marker([parseFloat(lat), parseFloat(lon)], {icon: neonOrangeIcon});
+                    
+                    pinSimulacion.bindTooltip(
+                        `<div class="text-white text-sm" style="margin-bottom:1px;">Punto ${simCounter}</div><div class="text-[#ff7e00] text-[11px]">${geojsonKMLActual ? 'Calculando...' : 'Señal activa'}</div>`, 
+                        { permanent: true, direction: 'top', className: 'pin-tooltip', offset: [0, -35] }
+                    );
+
                     elementosGrupo.push(pinSimulacion);
 
                     let imageUrl = data.PNG_WGS84 || data.png || data.PNG_Mercator;
@@ -605,50 +709,40 @@
 
                     if(inputMarker) map.removeLayer(inputMarker);
 
-                    let resultadoCobertura = null;
-                    let badgeFlotante = null;
-
+                    let porcentajeLocal = null;
                     if (geojsonKMLActual && boundsLeaflet && imageUrl) {
-                        resultadoCobertura = await calcularPorcentajeCoberturaReal(boundsLeaflet, imageUrl);
-                        
-                        if (resultadoCobertura !== null) {
-                            const centroTurf = turf.center(geojsonKMLActual);
-                            const coordsCentro = [centroTurf.geometry.coordinates[1], centroTurf.geometry.coordinates[0]];
-                            
-                            if (etiquetaCoberturaActual) map.removeLayer(etiquetaCoberturaActual);
-
-                            badgeFlotante = L.marker(coordsCentro, {
-                                icon: L.divIcon({
-                                    className: 'cobertura-badge',
-                                    html: `Cobertura: ${resultadoCobertura}%`
-                                })
-                            }).addTo(map);
-                            
-                            etiquetaCoberturaActual = badgeFlotante;
-                        }
+                        porcentajeLocal = await calcularPorcentajeLocal(boundsLeaflet, imageUrl);
                     }
+
+                    let tooltipHtml = `<div class="text-white text-[15px]" style="margin-bottom:1px;">Punto ${simCounter}</div>`;
+                    if (porcentajeLocal !== null) {
+                        tooltipHtml += `<div class="text-[#ff7e00] text-[14px]">Local: ${porcentajeLocal}%</div>`;
+                    }
+                    pinSimulacion.setTooltipContent(tooltipHtml);
 
                     simulaciones.push({
                         id: Date.now(),
-                        name: `Análisis ${simCounter}`,
+                        name: `Punto ${simCounter}`,
                         freq: freq,
                         alt: txHeight,
                         kmz: data.kmz,
                         layerGroup: capaGrupo,
                         visible: true,
-                        coberturaPct: resultadoCobertura, 
-                        badgeMarker: badgeFlotante          
+                        coberturaLocal: porcentajeLocal, 
+                        imageUrl: imageUrl,              
+                        bounds: boundsLeaflet            
                     });
                     
                     simCounter++;
-                    renderizarHistorial();
+                    
+                    await actualizarInterfazGlobal();
 
                 } else {
                     alert("Error en la simulación: " + (data.error || "Revisa la consola."));
                 }
             } catch (error) {
                 console.error("Error:", error);
-                alert("Error de conexión con la API.");
+                alert("Error de conexión con la API de CloudRF.");
             } finally {
                 document.getElementById('btnSimular').classList.remove('hidden');
                 document.getElementById('loader').classList.add('hidden');
