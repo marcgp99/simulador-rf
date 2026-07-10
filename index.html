@@ -38,7 +38,7 @@
         .glow-hover:hover { box-shadow: 0 0 20px rgba(57, 255, 20, 0.4); }
         .neon-orange-pin { filter: drop-shadow(0 0 5px rgba(255, 126, 0, 0.8)); }
 
-        /* Etiqueta flotante GLOBAL (Centro de las parcelas) */
+        /* Etiqueta flotante GLOBAL (Centro) */
         .cobertura-badge {
             background: transparent !important;
             border: none !important;
@@ -47,7 +47,7 @@
             margin-left: -50px !important; 
         }
 
-        /* Etiqueta flotante LOCAL (Encima de los pines de antena) sin recuadros */
+        /* Etiqueta flotante LOCAL (Encima del pin) sin fondos de Leaflet */
         .pin-tooltip {
             background-color: transparent !important;
             border: none !important;
@@ -62,7 +62,6 @@
                  1px  1px 0 #000,
                  0px  4px 10px rgba(0,0,0,0.8) !important;
         }
-        /* Elimina la flechita residual del tooltip de Leaflet */
         .pin-tooltip::before {
             display: none !important;
         }
@@ -80,13 +79,6 @@
             </h1>
         </div>
         
-        <div id="api-stats-container" class="absolute left-1/2 -translate-x-1/2 flex items-center gap-5 px-5 py-2 bg-slate-800/80 border border-slate-700 rounded-xl shadow-lg backdrop-blur-md text-xs font-medium">
-            <span class="text-slate-400 flex items-center gap-2">
-                <svg class="animate-spin h-4 w-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                Conectando telemetría...
-            </span>
-        </div>
-
         <div class="w-1/3"></div> 
     </header>
 
@@ -96,6 +88,14 @@
             
             <div class="flex-shrink-0 flex flex-col gap-4">
                 
+                <div class="space-y-1.5 pb-4 border-b border-slate-700/50">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Perfil de Simulación</label>
+                    <select id="sim_profile" onchange="cambiarPerfil()" class="w-full px-4 py-2.5 bg-slate-900/80 border border-slate-600 hover:border-slate-500 rounded-lg text-sm text-slate-200 focus:ring-1 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-all cursor-pointer font-semibold">
+                        <option value="EU" selected>EU</option>
+                        <option value="LATAM">LATAM</option>
+                    </select>
+                </div>
+
                 <div class="space-y-1.5">
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Importar de Google Maps</label>
                     <div class="flex gap-2">
@@ -128,8 +128,11 @@
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Frecuencia (MHz)</label>
-                        <input type="number" id="freq" value="868" class="w-full px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-sm text-slate-200 focus:ring-1 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-all font-mono">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Land Cover (Bosques)</label>
+                        <select id="land_cover" class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700 hover:border-slate-500 rounded-lg text-sm text-slate-200 focus:ring-1 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-all cursor-pointer font-semibold">
+                            <option value="1">ON</option>
+                            <option value="0" selected>OFF</option>
+                        </select>
                     </div>
                     <div class="space-y-1.5">
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Altura Antena (m)</label>
@@ -178,63 +181,37 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        const CLOUDRF_API_KEY = "40959-23f44ca37e5b1a3f4e6bc0fff08857cc7ae92e01";
+        // =======================================================================
+        // 🔒 URL DEL PROXY DE CLOUDFLARE (Tu API KEY está 100% oculta en el backend)
+        // =======================================================================
+        const PROXY_URL = "https://ixorigue.small-leaf-5935.workers.dev";
+        
         const EMBEDDED_DEMO_TOKEN = ""; 
         const LIMITE_USOS = 2;
+        
         let simulaciones = []; 
         let simCounter = 1;
 
         let geojsonKMLActual = null;
         let etiquetaCoberturaActual = null; 
         let capaKMLActual = null;
+        let inputMarker;
 
+        // Configuración Modo Demo Cliente
         if (EMBEDDED_DEMO_TOKEN !== "") {
             document.getElementById('admin-tools').style.display = 'none';
-            document.getElementById('api-stats-container').style.display = 'none'; 
             let usos = parseInt(localStorage.getItem('uso_demo_' + EMBEDDED_DEMO_TOKEN) || '0');
             actualizarBannerCliente(usos);
-        } else {
-            actualizarBalanceCreditos();
         }
 
-        async function actualizarBalanceCreditos() {
-            const statsContainer = document.getElementById('api-stats-container');
-            const renderizarPanel = (usados, limiteCred, storageUsado, limiteStorage) => {
-                const credPct = ((usados / limiteCred) * 100).toFixed(1);
-                const storPct = ((storageUsado / limiteStorage) * 100).toFixed(0);
-                statsContainer.innerHTML = `
-                    <div class="flex items-center gap-2.5 text-slate-300">
-                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        <span>Créditos: <strong class="text-white font-mono">${usados} / ${limiteCred}</strong> (<span class="text-emerald-400">${credPct}%</span>)</span>
-                    </div>
-                    <div class="w-px h-5 bg-slate-600"></div>
-                    <div class="flex items-center gap-2.5 text-slate-300">
-                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-                        <span>Storage: <strong class="text-white font-mono">${storageUsado}MB / ${limiteStorage}MB</strong> (<span class="text-cyan-400">${storPct}%</span>)</span>
-                    </div>
-                `;
-            };
-
-            try {
-                const response = await fetch('https://api.cloudrf.com/account', {
-                    method: 'GET',
-                    headers: { 'key': CLOUDRF_API_KEY }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    let limit = data.plan?.credits || 5000;
-                    let balance = data.balance || limit;
-                    let storageUsed = data.storage?.used || 3907; 
-                    let storageLimit = data.storage?.limit || 5000;
-                    renderizarPanel(limit - balance, limit, storageUsed, storageLimit);
-                } else {
-                    throw new Error("CORS bloqueó");
-                }
-            } catch (err) {
-                let guardados = localStorage.getItem('ixorigue_admin_creditos_usados');
-                let creditosReales = guardados ? parseInt(guardados) : creditosBaseHistoricos;
-                renderizarPanel(creditosReales, 5000, 3907, 5000);
+        // Lógica automática de Land Cover al cambiar de perfil
+        function cambiarPerfil() {
+            const perfil = document.getElementById('sim_profile').value;
+            const selectLandCover = document.getElementById('land_cover');
+            if (perfil === 'EU') {
+                selectLandCover.value = "0"; // EU: OFF por defecto
+            } else {
+                selectLandCover.value = "1"; // LATAM: ON por defecto
             }
         }
 
@@ -273,7 +250,8 @@
             }
         }
 
-        const map = L.map('map').setView([39.44, -7.18], 13);
+        // Setup inicial de Leaflet
+        const map = L.map('map').setView([42.025, 1.669], 13);
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 19
         }).addTo(map);
@@ -292,7 +270,6 @@
             iconAnchor: [16, 41]
         });
 
-        let inputMarker;
         map.on('click', function(e) { colocarMarcador(e.latlng.lat, e.latlng.lng); });
 
         function colocarMarcador(lat, lon) {
@@ -388,7 +365,7 @@
                         if (turfCoords[0][0] !== turfCoords[turfCoords.length-1][0] || turfCoords[0][1] !== turfCoords[turfCoords.length-1][1]) {
                             turfCoords.push(turfCoords[0]);
                         }
-                        featuresKMLKML = featuresKML.push(turf.polygon([turfCoords]));
+                        featuresKML.push(turf.polygon([turfCoords]));
                     }
                 }
             }
@@ -396,7 +373,7 @@
             if (poligonosEncontrados > 0 && boundsGeneral.isValid()) {
                 map.fitBounds(boundsGeneral);
                 geojsonKMLActual = featuresKML.length === 1 ? featuresKML[0] : turf.featureCollection(featuresKML);
-                actualizarInterfazGlobal();
+                actualizarInterfazGlobal(); 
             } else {
                 alert("No se pudo dibujar el polígono.");
                 geojsonKMLActual = null;
@@ -434,8 +411,7 @@
                 img.onload = function() {
                     try {
                         const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
+                        canvas.width = img.width; canvas.height = img.height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0);
 
@@ -523,7 +499,8 @@
 
                             if (pixelX >= 0 && pixelX < c.imgWidth && pixelY >= 0 && pixelY < c.imgHeight) {
                                 if (c.ctx.getImageData(pixelX, pixelY, 1, 1).data[3] > 10) {
-                                    cubierto = true; break; 
+                                    cubierto = true;
+                                    break; 
                                 }
                             }
                         }
@@ -628,8 +605,9 @@
 
             const lat = document.getElementById('lat').value;
             const lon = document.getElementById('lon').value;
-            const freq = document.getElementById('freq').value;
             const txHeight = document.getElementById('tx_height').value;
+            const perfilActivo = document.getElementById('sim_profile').value;
+            const landCover = parseInt(document.getElementById('land_cover').value);
 
             if (!lat || !lon) return alert("Faltan coordenadas. Haz clic en el mapa.");
 
@@ -637,23 +615,45 @@
             document.getElementById('loader').classList.remove('hidden');
 
             try {
-                const payload = {
-                    site: "Simulador", network: "Demo",
-                    transmitter: {
-                        lat: parseFloat(lat), lon: parseFloat(lon),
-                        alt: parseFloat(txHeight), frq: parseFloat(freq),
-                        txw: 0.025, bwi: 0.1              
-                    },
-                    receiver: { alt: 1, rxg: 1, rxs: -120 },
-                    antenna: { txg: 4.3, txl: 1.14, ant: 1, pol: "v" },
-                    model: { pm: 1, pe: 3, cli: 1, rel: 80, ked: 1 },
-                    environment: { ele: 1, cll: 0, clb: 0 },
-                    output: { res: 10, rad: 10, fmt: "kmz", out: 2, col: "LORA.dBm" }
-                };
+                let payload = {};
 
-                const response = await fetch('https://api.cloudrf.com/area', {
+                // PAYLOAD DINÁMICO SEGÚN PERFIL Y LAND COVER AUTOMÁTICO
+                if (perfilActivo === 'EU') {
+                    // MAPEO DEL PERFIL EU (Tal como estaba antes)
+                    payload = {
+                        site: "Simulador EU", network: "Demo",
+                        transmitter: {
+                            lat: parseFloat(lat), lon: parseFloat(lon),
+                            alt: parseFloat(txHeight), frq: 868, // Frecuencia fija EU
+                            txw: 0.025, bwi: 0.1              
+                        },
+                        receiver: { alt: 1, rxg: 1, rxs: -120 },
+                        antenna: { txg: 4.3, txl: 1.14, ant: 1, pol: "v" },
+                        model: { pm: 1, pe: 3, cli: 1, rel: 80, ked: 1 },
+                        environment: { ele: 1, cll: landCover, clb: 0 }, // Toma ON/OFF del UI
+                        output: { res: 10, rad: 10, fmt: "kmz", out: 2, col: "LORA.dBm" }
+                    };
+                } else {
+                    // MAPEO EXACTO DEL PERFIL Custom-Argentina DE TUS CAPTURAS
+                    payload = {
+                        site: "Simulador LATAM", network: "Demo",
+                        transmitter: {
+                            lat: parseFloat(lat), lon: parseFloat(lon),
+                            alt: parseFloat(txHeight), frq: 915, // Frecuencia fija Argentina
+                            txw: 0.025, bwi: 0.1              
+                        },
+                        receiver: { alt: 1, rxg: 1, rxs: -120 }, // Sensibilidad -120 (Captura Mobile)
+                        antenna: { txg: 4.3, txl: 1.14, ant: 1, pol: "v" }, // Feeder Loss 1.14 y Ganancia 4.3 (Capturas Feeder/Antenna)
+                        model: { pm: 1, pe: 3, cli: 1, rel: 80, ked: 1 }, // Motor ITM (Captura Model)
+                        environment: { ele: 1, cll: landCover, clb: 0 }, // Toma ON/OFF del UI
+                        output: { res: 10, rad: 8, fmt: "kmz", out: 2, col: "LORA.dBm" } // Radio 8Km (Captura Output) y Colores LoRa
+                    };
+                }
+
+                // Enviar la petición al backend secreto de Cloudflare
+                const response = await fetch(PROXY_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'key': CLOUDRF_API_KEY },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
@@ -666,11 +666,6 @@
                         usos++;
                         localStorage.setItem('uso_demo_' + EMBEDDED_DEMO_TOKEN, usos);
                         actualizarBannerCliente(usos);
-                    } else {
-                        let guardados = localStorage.getItem('ixorigue_admin_creditos_usados');
-                        let contadorReal = guardados ? parseInt(guardados) : 315;
-                        localStorage.setItem('ixorigue_admin_creditos_usados', contadorReal + 1);
-                        actualizarBalanceCreditos();
                     }
 
                     let elementosGrupo = [];
@@ -723,7 +718,7 @@
                     simulaciones.push({
                         id: Date.now(),
                         name: `Punto ${simCounter}`,
-                        freq: freq,
+                        freq: perfilActivo === 'EU' ? 868 : 915,
                         alt: txHeight,
                         kmz: data.kmz,
                         layerGroup: capaGrupo,
@@ -742,7 +737,7 @@
                 }
             } catch (error) {
                 console.error("Error:", error);
-                alert("Error de conexión con la API de CloudRF.");
+                alert("Hubo un fallo de red o error de API.");
             } finally {
                 document.getElementById('btnSimular').classList.remove('hidden');
                 document.getElementById('loader').classList.add('hidden');
