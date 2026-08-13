@@ -19,7 +19,6 @@
             --bg-color: #f7faf8;
             --card-bg: #ffffff;
             
-            /* Warm Mint & Peach Palette */
             --primary: #51a3a3;
             --primary-light: #e8f4f4;
             --primary-dark: #377171;
@@ -30,7 +29,6 @@
 
             --accent-peach: #f8ad9d;
             --accent-sage: #80ed99;
-            --accent-warm: #fbc4ab;
 
             --text-main: #2d3748;
             --text-muted: #718096;
@@ -55,7 +53,6 @@
             min-height: 100vh;
         }
 
-        /* App Header Warm Mint Gradient */
         .app-header {
             background: linear-gradient(135deg, #51a3a3 0%, #68b0ab 50%, #80ed99 100%);
             color: white;
@@ -99,12 +96,6 @@
             gap: 6px;
         }
 
-        .edit-baby-btn:hover {
-            background: rgba(255, 255, 255, 0.35);
-            transform: translateY(-1px);
-        }
-
-        /* Sync Status Badge */
         .sync-badge {
             display: inline-flex;
             align-items: center;
@@ -142,14 +133,12 @@
             backdrop-filter: blur(5px);
         }
 
-        /* Container Main */
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 0 16px;
         }
 
-        /* Summary Cards Grid */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -178,11 +167,6 @@
             transition: var(--transition);
         }
 
-        .card-stat:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-
         .card-stat .icon-bg {
             position: absolute;
             right: -8px;
@@ -202,7 +186,6 @@
             color: var(--text-muted);
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .card-stat .value {
@@ -217,7 +200,6 @@
             font-weight: 600;
         }
 
-        /* Navigation Tabs */
         .tabs-nav {
             display: flex;
             background: #eef2f0;
@@ -252,7 +234,6 @@
             box-shadow: 0 4px 12px rgba(81, 163, 163, 0.12);
         }
 
-        /* Sections */
         .tab-content {
             display: none;
             animation: fadeIn 0.3s ease-in-out;
@@ -267,7 +248,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Card Section Layout */
         .section-card {
             background: var(--card-bg);
             border-radius: var(--border-radius);
@@ -296,7 +276,6 @@
             font-family: 'Quicksand', sans-serif;
         }
 
-        /* Forms */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -332,7 +311,6 @@
             box-shadow: 0 0 0 3.5px rgba(81, 163, 163, 0.15);
         }
 
-        /* Type Selector Pills */
         .pill-selector {
             display: flex;
             gap: 8px;
@@ -360,7 +338,6 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.06);
         }
 
-        /* Primary Action Buttons */
         .btn-submit {
             width: 100%;
             padding: 13px;
@@ -379,46 +356,91 @@
             box-shadow: 0 4px 14px rgba(81, 163, 163, 0.3);
         }
 
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(81, 163, 163, 0.4);
+        /* Breastfeeding Timer UI */
+        .timer-box {
+            background: #f9fbfb;
+            border: 2px dashed #b2d8d8;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
         }
 
-        .btn-submit:active {
-            transform: translateY(0);
+        .timer-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-family: monospace;
+            margin: 8px 0;
         }
 
-        /* Charts Container */
-        .chart-box {
-            position: relative;
-            height: 280px;
-            width: 100%;
-            margin-top: 15px;
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
         }
 
-        /* Data Tables / History List */
+        .btn-timer {
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-timer.start { background: var(--primary); color: white; }
+        .btn-timer.stop { background: #e74c3c; color: white; }
+
+        /* Grouped History By Days */
+        .day-group {
+            margin-bottom: 20px;
+        }
+
+        .day-header {
+            background: #eef4f2;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--primary-dark);
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .day-summary-pills {
+            display: flex;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .day-pill {
+            background: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            color: var(--text-main);
+        }
+
         .history-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            max-height: 320px;
-            overflow-y: auto;
-            padding-right: 4px;
+            gap: 8px;
         }
 
         .history-item {
-            background: #f9fbfb;
-            padding: 14px 18px;
-            border-radius: 14px;
+            background: #ffffff;
+            padding: 12px 16px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-left: 4px solid var(--primary);
-            transition: var(--transition);
-        }
-
-        .history-item:hover {
-            background: #f1f7f5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            border-right: 1px solid #f0f0f0;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .item-details {
@@ -429,20 +451,13 @@
 
         .item-title {
             font-weight: 700;
-            font-size: 0.98rem;
+            font-size: 0.95rem;
             color: var(--text-main);
         }
 
         .item-sub {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
-        }
-
-        .item-value {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: var(--primary-dark);
-            text-align: right;
         }
 
         .btn-delete {
@@ -452,16 +467,10 @@
             opacity: 0.4;
             cursor: pointer;
             padding: 6px;
-            margin-left: 10px;
-            transition: var(--transition);
         }
 
-        .btn-delete:hover {
-            opacity: 1;
-            transform: scale(1.15);
-        }
+        .btn-delete:hover { opacity: 1; }
 
-        /* Config Modal */
         .modal-backdrop {
             position: fixed;
             top:0; left:0; right:0; bottom:0;
@@ -474,9 +483,7 @@
             padding: 16px;
         }
 
-        .modal-backdrop.active {
-            display: flex;
-        }
+        .modal-backdrop.active { display: flex; }
 
         .modal-card {
             background: white;
@@ -484,40 +491,8 @@
             padding: 26px;
             width: 100%;
             max-width: 480px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            animation: modalIn 0.25s ease-out;
         }
 
-        @keyframes modalIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-
-        .modal-header h3 {
-            font-family: 'Quicksand', sans-serif;
-            font-size: 1.35rem;
-        }
-
-        /* Firebase Config Help Box */
-        .firebase-help {
-            background: #fff8e1;
-            border: 1px solid #ffe082;
-            padding: 12px 14px;
-            border-radius: 12px;
-            font-size: 0.82rem;
-            color: #7f6000;
-            margin-bottom: 14px;
-            line-height: 1.45;
-        }
-
-        /* Toast Notifications */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -528,30 +503,11 @@
             padding: 12px 24px;
             border-radius: 50px;
             font-size: 0.9rem;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.3s;
             z-index: 2000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 32px 10px;
-            color: var(--text-muted);
-        }
-
-        .empty-state i {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            opacity: 0.3;
-        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
@@ -655,9 +611,9 @@
 
             <div class="section-card">
                 <div class="section-header">
-                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Histórico & Incrementos</h2>
+                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Histórico de Peso</h2>
                 </div>
-                <div class="history-list" id="weight-history"></div>
+                <div id="weight-history"></div>
             </div>
         </div>
 
@@ -695,7 +651,7 @@
                 <div class="section-header">
                     <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--secondary-dark);"></i> Histórico de Talla</h2>
                 </div>
-                <div class="history-list" id="height-history"></div>
+                <div id="height-history"></div>
             </div>
         </div>
 
@@ -728,19 +684,26 @@
                         </div>
                     </div>
 
-                    <!-- Campos Pecho -->
-                    <div id="feeding-pecho-fields" class="form-grid" style="display: none;">
-                        <div class="form-group">
-                            <label>Lado del Pecho</label>
-                            <select id="feeding-side" class="form-control">
-                                <option value="Izquierdo">Izquierdo 👈</option>
-                                <option value="Derecho">Derecho 👉</option>
-                                <option value="Ambos">Ambos Pechos 👈👉</option>
-                            </select>
+                    <!-- Campos Pecho con Cronometro Integrado -->
+                    <div id="feeding-pecho-fields" style="display: none;">
+                        <div class="timer-box">
+                            <span style="font-size:0.85rem; font-weight:600; color:var(--text-muted);">⏱️ Cronómetro de Lactancia</span>
+                            <div class="timer-display" id="timer-display">00:00</div>
+                            <div class="timer-controls">
+                                <button type="button" class="btn-timer start" id="btn-timer-left" onclick="toggleBreastTimer('Izquierdo')">👈 Izquierdo</button>
+                                <button type="button" class="btn-timer start" id="btn-timer-right" onclick="toggleBreastTimer('Derecho')">👉 Derecho</button>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Duración (Minutos)</label>
-                            <input type="number" id="feeding-duration" class="form-control" placeholder="ej. 15" min="1">
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Minutos Pecho Izquierdo</label>
+                                <input type="number" id="feeding-dur-left" class="form-control" value="0" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Minutos Pecho Derecho</label>
+                                <input type="number" id="feeding-dur-right" class="form-control" value="0" min="0">
+                            </div>
                         </div>
                     </div>
 
@@ -750,9 +713,9 @@
 
             <div class="section-card">
                 <div class="section-header">
-                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Tomas Recientes</h2>
+                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Histórico Diario de Tomas</h2>
                 </div>
-                <div class="history-list" id="feeding-history"></div>
+                <div id="feeding-history"></div>
             </div>
         </div>
 
@@ -788,9 +751,9 @@
 
             <div class="section-card">
                 <div class="section-header">
-                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: #f6bd60;"></i> Histórico de Pañales</h2>
+                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: #f6bd60;"></i> Histórico Diario de Pañales</h2>
                 </div>
-                <div class="history-list" id="diaper-history"></div>
+                <div id="diaper-history"></div>
             </div>
         </div>
 
@@ -799,9 +762,9 @@
     <!-- Modal Config / Firebase -->
     <div class="modal-backdrop" id="modal-config">
         <div class="modal-card">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-gear"></i> Configuración</h3>
-                <button style="background:none; border:none; font-size:1.2rem; cursor:pointer;" onclick="closeConfigModal()">✕</button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                <h3>⚙️ Configuración</h3>
+                <button style="background:none; border:none; cursor:pointer;" onclick="closeConfigModal()">✕</button>
             </div>
 
             <div class="form-group" style="margin-bottom: 14px;">
@@ -816,35 +779,23 @@
 
             <hr style="margin: 15px 0; border: none; border-top: 1px solid #eee;">
 
-            <h4 style="font-size:1rem; margin-bottom: 8px;">☁️ Sincronizar en Pareja (Firebase)</h4>
-            
-            <div class="firebase-help">
-                Para ver los cambios simultáneamente en ambos móviles gratis: crea un proyecto gratis en <b>firebase.google.com</b>, añade una Web App y pega la configuración JSON aquí.
-            </div>
-
+            <h4 style="font-size:0.95rem; margin-bottom: 8px;">☁️ Sincronizar con Firebase</h4>
             <div class="form-group" style="margin-bottom: 16px;">
-                <label>Firebase Config (JSON format)</label>
-                <textarea id="config-firebase-json" class="form-control" rows="5" style="font-family: monospace; font-size: 0.75rem;" placeholder='{
-  "apiKey": "...",
-  "authDomain": "...",
-  "projectId": "..."
-}'></textarea>
+                <textarea id="config-firebase-json" class="form-control" rows="5" style="font-family: monospace; font-size: 0.75rem;"></textarea>
             </div>
 
-            <button type="button" class="btn-submit" onclick="saveConfiguration()"><i class="fa-solid fa-check"></i> Guardar Ajustes</button>
+            <button type="button" class="btn-submit" onclick="saveConfiguration()">Guardar Ajustes</button>
         </div>
     </div>
 
-    <!-- Toast Component -->
     <div class="toast" id="toast-msg">
-        <i class="fa-solid fa-circle-check" style="color: #2ecc71;"></i>
         <span id="toast-text">Guardado correctamente</span>
     </div>
 
-    <!-- Firebase SDK (Modular) CDN -->
+    <!-- Firebase SDK Modular -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         window.db = null;
         window.fbAddDoc = addDoc;
@@ -860,25 +811,17 @@
                 document.getElementById('sync-indicator').classList.remove('offline');
                 document.getElementById('sync-status-text').innerText = 'Sincronizado en la nube (Firebase)';
                 listenToCloudData();
-                showToast('Conectado a Firebase correctamente');
             } catch (err) {
-                console.error("Firebase error:", err);
-                document.getElementById('sync-indicator').classList.add('offline');
-                document.getElementById('sync-status-text').innerText = 'Error en Config Firebase';
+                console.error(err);
             }
         };
 
         function listenToCloudData() {
             if (!window.db) return;
-
-            const collections = ['weights', 'heights', 'feedings', 'diapers'];
-            collections.forEach(colName => {
-                const q = query(collection(window.db, colName));
-                onSnapshot(q, (snapshot) => {
+            ['weights', 'heights', 'feedings', 'diapers'].forEach(colName => {
+                onSnapshot(query(collection(window.db, colName)), (snapshot) => {
                     const data = [];
-                    snapshot.forEach((doc) => {
-                        data.push({ id: doc.id, ...doc.data() });
-                    });
+                    snapshot.forEach((doc) => data.push({ id: doc.id, ...doc.data() }));
                     localStorage.setItem(`baby_${colName}`, JSON.stringify(data));
                     window.refreshAppUI();
                 });
@@ -886,26 +829,22 @@
         }
     </script>
 
-    <!-- Main Logic Script -->
     <script>
-        // State variables
-        let babyConfig = {
-            name: "JOAN",
-            birthdate: new Date().toISOString().split('T')[0],
-            firebaseConfig: ""
-        };
-
+        let babyConfig = { name: "JOAN", birthdate: "", firebaseConfig: "" };
         let currentFeedingType = 'biberon';
         let weightChartInstance = null;
         let heightChartInstance = null;
 
-        // Initialize App
+        // Timer variables
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let activeBreast = null;
+
         document.addEventListener('DOMContentLoaded', () => {
             loadConfig();
             setCurrentDates();
             refreshAppUI();
 
-            // Check if Firebase is configured
             if (babyConfig.firebaseConfig) {
                 setTimeout(() => {
                     if (window.initFirebase) window.initFirebase(babyConfig.firebaseConfig);
@@ -915,21 +854,13 @@
 
         function loadConfig() {
             const saved = localStorage.getItem('baby_config');
-            if (saved) {
-                babyConfig = JSON.parse(saved);
-            }
-            
-            // Force JOAN as the name if it was previously set to default
-            if (!babyConfig.name || babyConfig.name === "Mi Bebé") {
-                babyConfig.name = "JOAN";
-                localStorage.setItem('baby_config', JSON.stringify(babyConfig));
-            }
+            if (saved) babyConfig = JSON.parse(saved);
+            babyConfig.name = "JOAN";
             
             document.getElementById('baby-name-display').innerText = babyConfig.name + " 🍼";
             document.getElementById('config-baby-name').value = babyConfig.name;
             document.getElementById('config-baby-birth').value = babyConfig.birthdate || "";
             document.getElementById('config-firebase-json').value = babyConfig.firebaseConfig || "";
-            
             updateAgeDisplay();
         }
 
@@ -937,35 +868,24 @@
             if (!babyConfig.birthdate) return;
             const birth = new Date(babyConfig.birthdate);
             const now = new Date();
-            const diffTime = Math.abs(now - birth);
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            
+            const diffDays = Math.floor(Math.abs(now - birth) / (1000 * 60 * 60 * 24));
             const weeks = Math.floor(diffDays / 7);
-            const remainingDays = diffDays % 7;
-            
-            let text = `${diffDays} días de vida`;
-            if (weeks > 0) {
-                text += ` (${weeks} sem ${remainingDays}d)`;
-            }
-            document.getElementById('baby-age-display').innerText = text;
+            const days = diffDays % 7;
+            document.getElementById('baby-age-display').innerText = `${diffDays} días de vida (${weeks} sem ${days}d)`;
         }
 
         function setCurrentDates() {
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             const nowIso = now.toISOString().slice(0,16);
-
-            document.getElementById('weight-datetime').value = nowIso;
-            document.getElementById('height-datetime').value = nowIso;
-            document.getElementById('feeding-datetime').value = nowIso;
-            document.getElementById('diaper-datetime').value = nowIso;
+            ['weight-datetime', 'height-datetime', 'feeding-datetime', 'diaper-datetime'].forEach(id => {
+                document.getElementById(id).value = nowIso;
+            });
         }
 
-        // Tab Switcher
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
             event.currentTarget.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
 
@@ -973,35 +893,58 @@
             if (tabId === 'altura' && heightChartInstance) heightChartInstance.resize();
         }
 
-        // Feeding Type Selector
         function selectFeedingType(type) {
             currentFeedingType = type;
-            const btnBibe = document.getElementById('pill-bibe');
-            const btnPecho = document.getElementById('pill-pecho');
-            const fieldsBibe = document.getElementById('feeding-biberon-fields');
-            const fieldsPecho = document.getElementById('feeding-pecho-fields');
+            document.getElementById('pill-bibe').classList.toggle('active', type === 'biberon');
+            document.getElementById('pill-pecho').classList.toggle('active', type === 'pecho');
+            document.getElementById('feeding-biberon-fields').style.display = type === 'biberon' ? 'grid' : 'none';
+            document.getElementById('feeding-pecho-fields').style.display = type === 'pecho' ? 'block' : 'none';
+        }
 
-            if (type === 'biberon') {
-                btnBibe.classList.add('active');
-                btnPecho.classList.remove('active');
-                fieldsBibe.style.display = 'grid';
-                fieldsPecho.style.display = 'none';
+        // Timer Logic
+        function toggleBreastTimer(side) {
+            const btnLeft = document.getElementById('btn-timer-left');
+            const btnRight = document.getElementById('btn-timer-right');
+
+            if (activeBreast === side) {
+                // Stop timer and add minutes to input
+                clearInterval(timerInterval);
+                const minutes = Math.ceil(timerSeconds / 60);
+                const inputId = side === 'Izquierdo' ? 'feeding-dur-left' : 'feeding-dur-right';
+                const currentVal = parseInt(document.getElementById(inputId).value) || 0;
+                document.getElementById(inputId).value = currentVal + minutes;
+
+                // Reset UI
+                timerSeconds = 0;
+                activeBreast = null;
+                document.getElementById('timer-display').innerText = "00:00";
+                btnLeft.className = "btn-timer start";
+                btnRight.className = "btn-timer start";
+                btnLeft.innerText = "👈 Izquierdo";
+                btnRight.innerText = "👉 Derecho";
             } else {
-                btnPecho.classList.add('active');
-                btnBibe.classList.remove('active');
-                fieldsBibe.style.display = 'none';
-                fieldsPecho.style.display = 'grid';
+                // Stop if running
+                clearInterval(timerInterval);
+                timerSeconds = 0;
+                activeBreast = side;
+
+                btnLeft.className = side === 'Izquierdo' ? "btn-timer stop" : "btn-timer start";
+                btnRight.className = side === 'Derecho' ? "btn-timer stop" : "btn-timer start";
+                btnLeft.innerText = side === 'Izquierdo' ? "⏹️ Detener" : "👈 Izquierdo";
+                btnRight.innerText = side === 'Derecho' ? "⏹️ Detener" : "👉 Derecho";
+
+                timerInterval = setInterval(() => {
+                    timerSeconds++;
+                    const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+                    const s = String(timerSeconds % 60).padStart(2, '0');
+                    document.getElementById('timer-display').innerText = `${m}:${s}`;
+                }, 1000);
             }
         }
 
-        // Save Local or Cloud
         async function saveData(collectionName, item) {
             if (window.db) {
-                try {
-                    await window.fbAddDoc(window.fbCollection(window.db, collectionName), item);
-                } catch(e) {
-                    console.error("Cloud save error:", e);
-                }
+                await window.fbAddDoc(window.fbCollection(window.db, collectionName), item);
             } else {
                 const existing = JSON.parse(localStorage.getItem(`baby_${collectionName}`) || '[]');
                 item.id = Date.now().toString();
@@ -1013,29 +956,23 @@
         }
 
         async function deleteDataItem(collectionName, id) {
-            if (confirm("¿Estás seguro de eliminar este registro?")) {
+            if (confirm("¿Eliminar este registro?")) {
                 if (window.db) {
-                    try {
-                        await window.fbDeleteDoc(window.fbDoc(window.db, collectionName, id));
-                    } catch(e) { console.error(e); }
+                    await window.fbDeleteDoc(window.fbDoc(window.db, collectionName, id));
                 } else {
                     let existing = JSON.parse(localStorage.getItem(`baby_${collectionName}`) || '[]');
                     existing = existing.filter(i => i.id !== id);
                     localStorage.setItem(`baby_${collectionName}`, JSON.stringify(existing));
                     refreshAppUI();
                 }
-                showToast('Registro eliminado');
+                showToast('Eliminado');
             }
         }
 
-        // Handlers
         function handleAddWeight(e) {
             e.preventDefault();
             const datetime = document.getElementById('weight-datetime').value;
             const value = parseFloat(document.getElementById('weight-value').value);
-
-            if (!value) return;
-
             saveData('weights', { datetime, value, timestamp: new Date(datetime).getTime() });
             document.getElementById('weight-value').value = '';
         }
@@ -1044,9 +981,6 @@
             e.preventDefault();
             const datetime = document.getElementById('height-datetime').value;
             const value = parseFloat(document.getElementById('height-value').value);
-
-            if (!value) return;
-
             saveData('heights', { datetime, value, timestamp: new Date(datetime).getTime() });
             document.getElementById('height-value').value = '';
         }
@@ -1054,23 +988,20 @@
         function handleAddFeeding(e) {
             e.preventDefault();
             const datetime = document.getElementById('feeding-datetime').value;
-            
-            let item = {
-                datetime,
-                type: currentFeedingType,
-                timestamp: new Date(datetime).getTime()
-            };
+            let item = { datetime, type: currentFeedingType, timestamp: new Date(datetime).getTime() };
 
             if (currentFeedingType === 'biberon') {
                 item.ml = parseInt(document.getElementById('feeding-ml').value) || 0;
             } else {
-                item.side = document.getElementById('feeding-side').value;
-                item.duration = parseInt(document.getElementById('feeding-duration').value) || 0;
+                item.durLeft = parseInt(document.getElementById('feeding-dur-left').value) || 0;
+                item.durRight = parseInt(document.getElementById('feeding-dur-right').value) || 0;
+                item.totalMin = item.durLeft + item.durRight;
             }
 
             saveData('feedings', item);
             document.getElementById('feeding-ml').value = '';
-            document.getElementById('feeding-duration').value = '';
+            document.getElementById('feeding-dur-left').value = '0';
+            document.getElementById('feeding-dur-right').value = '0';
         }
 
         function handleAddDiaper(e) {
@@ -1078,349 +1009,235 @@
             const datetime = document.getElementById('diaper-datetime').value;
             const type = document.getElementById('diaper-type').value;
             const notes = document.getElementById('diaper-notes').value;
-
             saveData('diapers', { datetime, type, notes, timestamp: new Date(datetime).getTime() });
             document.getElementById('diaper-notes').value = '';
         }
 
-        // UI Refresh Coordinator
         window.refreshAppUI = function() {
             renderWeightSection();
             renderHeightSection();
-            renderFeedingSection();
-            renderDiaperSection();
+            renderGroupedFeedings();
+            renderGroupedDiapers();
             updateDashboardStats();
         };
 
-        // Render Weights & Calculations
-        function renderWeightSection() {
-            const data = JSON.parse(localStorage.getItem('baby_weights') || '[]')
-                .sort((a,b) => a.timestamp - b.timestamp);
-
-            const container = document.getElementById('weight-history');
-            container.innerHTML = '';
-
-            if (data.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-weight-scale"></i><p>Aún no hay pesajes registrados</p></div>';
-                renderWeightChart([]);
-                return;
-            }
-
-            // Calculate daily & weekly gains
-            for (let i = data.length - 1; i >= 0; i--) {
-                const current = data[i];
-                let subtext = '';
-
-                if (i > 0) {
-                    const prev = data[i - 1];
-                    const diffGrams = current.value - prev.value;
-                    const diffDays = (current.timestamp - prev.timestamp) / (1000 * 60 * 60 * 24);
-                    
-                    if (diffDays > 0) {
-                        const dailyGain = Math.round(diffGrams / diffDays);
-                        const weeklyGain = Math.round(dailyGain * 7);
-                        const sign = dailyGain >= 0 ? '+' : '';
-                        subtext = `<span style="color:${dailyGain >= 0 ? '#27ae60':'#e74c3c'}; font-weight:600;">
-                            ${sign}${dailyGain} g/día (${sign}${weeklyGain} g/sem)
-                        </span>`;
-                    }
-                } else {
-                    subtext = 'Primer registro';
-                }
-
-                const dateStr = new Date(current.datetime).toLocaleString('es-ES', { dateStyle:'short', timeStyle:'short' });
-
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `
-                    <div class="item-details">
-                        <span class="item-title">${(current.value / 1000).toFixed(2)} kg (${current.value} g)</span>
-                        <span class="item-sub">${dateStr} • ${subtext}</span>
-                    </div>
-                    <div>
-                        <button class="btn-delete" onclick="deleteDataItem('weights', '${current.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-                container.appendChild(div);
-            }
-
-            renderWeightChart(data);
+        function groupByDate(items) {
+            const groups = {};
+            items.forEach(item => {
+                const dateKey = item.datetime ? item.datetime.split('T')[0] : 'Sin Fecha';
+                if (!groups[dateKey]) groups[dateKey] = [];
+                groups[dateKey].push(item);
+            });
+            return groups;
         }
 
-        // Render Heights
-        function renderHeightSection() {
-            const data = JSON.parse(localStorage.getItem('baby_heights') || '[]')
-                .sort((a,b) => a.timestamp - b.timestamp);
-
-            const container = document.getElementById('height-history');
-            container.innerHTML = '';
-
-            if (data.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-ruler-vertical"></i><p>Aún no hay mediciones registradas</p></div>';
-                renderHeightChart([]);
-                return;
-            }
-
-            for (let i = data.length - 1; i >= 0; i--) {
-                const current = data[i];
-                const dateStr = new Date(current.datetime).toLocaleString('es-ES', { dateStyle:'short', timeStyle:'short' });
-
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.style.borderLeftColor = 'var(--secondary)';
-                div.innerHTML = `
-                    <div class="item-details">
-                        <span class="item-title">${current.value} cm</span>
-                        <span class="item-sub">${dateStr}</span>
-                    </div>
-                    <div>
-                        <button class="btn-delete" onclick="deleteDataItem('heights', '${current.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                `;
-                container.appendChild(div);
-            }
-
-            renderHeightChart(data);
-        }
-
-        // Render Feedings
-        function renderFeedingSection() {
-            const data = JSON.parse(localStorage.getItem('baby_feedings') || '[]')
-                .sort((a,b) => b.timestamp - a.timestamp);
-
+        function renderGroupedFeedings() {
+            const data = JSON.parse(localStorage.getItem('baby_feedings') || '[]').sort((a,b) => b.timestamp - a.timestamp);
             const container = document.getElementById('feeding-history');
             container.innerHTML = '';
 
-            if (data.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-bottle-droplet"></i><p>No hay tomas anotadas</p></div>';
-                return;
-            }
+            const groups = groupByDate(data);
+            Object.keys(groups).sort().reverse().forEach(date => {
+                const dayItems = groups[date];
+                const totalMl = dayItems.reduce((acc, curr) => acc + (curr.ml || 0), 0);
+                const totalPechoMin = dayItems.reduce((acc, curr) => acc + (curr.totalMin || 0), 0);
 
-            data.forEach(item => {
-                const dateStr = new Date(item.datetime).toLocaleString('es-ES', { dateStyle:'short', timeStyle:'short' });
-                let detailsText = item.type === 'biberon' ? `🍾 Biberón: ${item.ml} ml` : `🤱 Pecho ${item.side}: ${item.duration} min`;
-
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.style.borderLeftColor = item.type === 'biberon' ? 'var(--primary)' : 'var(--secondary)';
-                div.innerHTML = `
-                    <div class="item-details">
-                        <span class="item-title">${detailsText}</span>
-                        <span class="item-sub">${dateStr}</span>
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'day-group';
+                groupDiv.innerHTML = `
+                    <div class="day-header">
+                        <span>📅 ${new Date(date).toLocaleDateString('es-ES', {weekday:'short', day:'numeric', month:'short'})}</span>
+                        <div class="day-summary-pills">
+                            <span class="day-pill">🍼 ${totalMl} ml</span>
+                            <span class="day-pill">🤱 ${totalPechoMin} min</span>
+                        </div>
                     </div>
-                    <div>
-                        <button class="btn-delete" onclick="deleteDataItem('feedings', '${item.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
+                    <div class="history-list" id="feed-list-${date}"></div>
                 `;
-                container.appendChild(div);
+                container.appendChild(groupDiv);
+
+                const listEl = groupDiv.querySelector(`#feed-list-${date}`);
+                dayItems.forEach(item => {
+                    const timeStr = new Date(item.datetime).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+                    let desc = item.type === 'biberon' ? `🍾 Biberón: ${item.ml} ml` : `🤱 Pecho: ${item.totalMin} min (👈${item.durLeft||0}m | 👉${item.durRight||0}m)`;
+
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.style.borderLeftColor = item.type === 'biberon' ? 'var(--primary)' : 'var(--secondary)';
+                    div.innerHTML = `
+                        <div class="item-details">
+                            <span class="item-title">${desc}</span>
+                            <span class="item-sub">${timeStr}</span>
+                        </div>
+                        <button class="btn-delete" onclick="deleteDataItem('feedings', '${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    `;
+                    listEl.appendChild(div);
+                });
             });
         }
 
-        // Render Diapers
-        function renderDiaperSection() {
-            const data = JSON.parse(localStorage.getItem('baby_diapers') || '[]')
-                .sort((a,b) => b.timestamp - a.timestamp);
-
+        function renderGroupedDiapers() {
+            const data = JSON.parse(localStorage.getItem('baby_diapers') || '[]').sort((a,b) => b.timestamp - a.timestamp);
             const container = document.getElementById('diaper-history');
             container.innerHTML = '';
 
-            if (data.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-baby"></i><p>No hay registro de pañales</p></div>';
-                return;
-            }
+            const groups = groupByDate(data);
+            Object.keys(groups).sort().reverse().forEach(date => {
+                const dayItems = groups[date];
+                let pipis = 0, cacas = 0;
 
-            data.forEach(item => {
-                const dateStr = new Date(item.datetime).toLocaleString('es-ES', { dateStyle:'short', timeStyle:'short' });
+                dayItems.forEach(d => {
+                    if (d.type.includes('Pipí')) pipis++;
+                    if (d.type.includes('Caca')) cacas++;
+                });
 
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.style.borderLeftColor = '#f6bd60';
-                div.innerHTML = `
-                    <div class="item-details">
-                        <span class="item-title">${item.type}</span>
-                        <span class="item-sub">${dateStr} ${item.notes ? '• ' + item.notes : ''}</span>
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'day-group';
+                groupDiv.innerHTML = `
+                    <div class="day-header">
+                        <span>📅 ${new Date(date).toLocaleDateString('es-ES', {weekday:'short', day:'numeric', month:'short'})} (${dayItems.length} pañales)</span>
+                        <div class="day-summary-pills">
+                            <span class="day-pill">💦 ${pipis}</span>
+                            <span class="day-pill">💩 ${cacas}</span>
+                        </div>
                     </div>
-                    <div>
-                        <button class="btn-delete" onclick="deleteDataItem('diapers', '${item.id}')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
+                    <div class="history-list" id="diaper-list-${date}"></div>
                 `;
-                container.appendChild(div);
+                container.appendChild(groupDiv);
+
+                const listEl = groupDiv.querySelector(`#diaper-list-${date}`);
+                dayItems.forEach(item => {
+                    const timeStr = new Date(item.datetime).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.style.borderLeftColor = '#f6bd60';
+                    div.innerHTML = `
+                        <div class="item-details">
+                            <span class="item-title">${item.type}</span>
+                            <span class="item-sub">${timeStr} ${item.notes ? '• ' + item.notes : ''}</span>
+                        </div>
+                        <button class="btn-delete" onclick="deleteDataItem('diapers', '${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    `;
+                    listEl.appendChild(div);
+                });
             });
         }
 
-        // Calculate and display top stats
+        function renderWeightSection() {
+            const data = JSON.parse(localStorage.getItem('baby_weights') || '[]').sort((a,b) => a.timestamp - b.timestamp);
+            const container = document.getElementById('weight-history');
+            container.innerHTML = '';
+
+            data.slice().reverse().forEach((item, i) => {
+                const dateStr = new Date(item.datetime).toLocaleString('es-ES', {dateStyle:'short', timeStyle:'short'});
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.style.marginBottom = '8px';
+                div.innerHTML = `
+                    <div class="item-details">
+                        <span class="item-title">${(item.value/1000).toFixed(2)} kg (${item.value} g)</span>
+                        <span class="item-sub">${dateStr}</span>
+                    </div>
+                    <button class="btn-delete" onclick="deleteDataItem('weights', '${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                `;
+                container.appendChild(div);
+            });
+            renderWeightChart(data);
+        }
+
+        function renderHeightSection() {
+            const data = JSON.parse(localStorage.getItem('baby_heights') || '[]').sort((a,b) => a.timestamp - b.timestamp);
+            const container = document.getElementById('height-history');
+            container.innerHTML = '';
+
+            data.slice().reverse().forEach(item => {
+                const dateStr = new Date(item.datetime).toLocaleString('es-ES', {dateStyle:'short', timeStyle:'short'});
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.style.borderLeftColor = 'var(--secondary)';
+                div.style.marginBottom = '8px';
+                div.innerHTML = `
+                    <div class="item-details">
+                        <span class="item-title">${item.value} cm</span>
+                        <span class="item-sub">${dateStr}</span>
+                    </div>
+                    <button class="btn-delete" onclick="deleteDataItem('heights', '${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                `;
+                container.appendChild(div);
+            });
+            renderHeightChart(data);
+        }
+
         function updateDashboardStats() {
-            // Weight Stats
-            const weights = JSON.parse(localStorage.getItem('baby_weights') || '[]')
-                .sort((a,b) => a.timestamp - b.timestamp);
-            
+            const weights = JSON.parse(localStorage.getItem('baby_weights') || '[]').sort((a,b) => a.timestamp - b.timestamp);
             if (weights.length > 0) {
                 const last = weights[weights.length - 1];
                 document.getElementById('stat-last-weight').innerText = `${(last.value / 1000).toFixed(2)} kg`;
-
-                if (weights.length > 1) {
-                    const prev = weights[weights.length - 2];
-                    const diffG = last.value - prev.value;
-                    const diffD = (last.timestamp - prev.timestamp) / (1000 * 60 * 60 * 24);
-                    if (diffD > 0) {
-                        const daily = Math.round(diffG / diffD);
-                        document.getElementById('stat-weight-inc').innerText = `${daily >= 0 ? '+':''}${daily} g/día`;
-                    }
-                }
             }
 
-            // Height Stats
-            const heights = JSON.parse(localStorage.getItem('baby_heights') || '[]')
-                .sort((a,b) => a.timestamp - b.timestamp);
-            
+            const heights = JSON.parse(localStorage.getItem('baby_heights') || '[]').sort((a,b) => a.timestamp - b.timestamp);
             if (heights.length > 0) {
                 const last = heights[heights.length - 1];
                 document.getElementById('stat-last-height').innerText = `${last.value} cm`;
-                const dateStr = new Date(last.datetime).toLocaleDateString('es-ES');
-                document.getElementById('stat-height-date').innerText = `Medido el ${dateStr}`;
             }
 
-            // Today Feedings Stats
-            const feedings = JSON.parse(localStorage.getItem('baby_feedings') || '[]');
             const todayStr = new Date().toISOString().split('T')[0];
+            const feedings = JSON.parse(localStorage.getItem('baby_feedings') || '[]');
             const todayFeedings = feedings.filter(f => f.datetime && f.datetime.startsWith(todayStr));
-            
             const totalMl = todayFeedings.reduce((acc, curr) => acc + (curr.ml || 0), 0);
             document.getElementById('stat-today-feedings').innerText = todayFeedings.length;
             document.getElementById('stat-today-ml').innerText = `${totalMl} ml totales`;
 
-            // Today Diapers Stats
-            const diapers = JSON.parse(localStorage.getItem('baby_diapers') || '[]')
-                .sort((a,b) => b.timestamp - a.timestamp);
+            const diapers = JSON.parse(localStorage.getItem('baby_diapers') || '[]').sort((a,b) => b.timestamp - a.timestamp);
             const todayDiapers = diapers.filter(d => d.datetime && d.datetime.startsWith(todayStr));
-
             document.getElementById('stat-today-diapers').innerText = todayDiapers.length;
-            if (diapers.length > 0) {
-                const lastD = new Date(diapers[0].datetime);
-                const timeStr = lastD.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-                document.getElementById('stat-last-diaper').innerText = `Último: ${timeStr}`;
-            }
         }
 
-        // Chart Renderers
         function renderWeightChart(data) {
             const ctx = document.getElementById('weightChart').getContext('2d');
-            
-            const labels = data.map(d => new Date(d.datetime));
-            const values = data.map(d => d.value / 1000); // kg
-
             if (weightChartInstance) weightChartInstance.destroy();
-
             weightChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Peso (kg)',
-                        data: values,
-                        borderColor: '#51a3a3',
-                        backgroundColor: 'rgba(81, 163, 163, 0.15)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.35,
-                        pointBackgroundColor: '#377171',
-                        pointRadius: 5
-                    }]
+                    labels: data.map(d => new Date(d.datetime)),
+                    datasets: [{ label: 'Peso (kg)', data: data.map(d => d.value / 1000), borderColor: '#51a3a3', backgroundColor: 'rgba(81,163,163,0.15)', borderWidth: 3, fill: true, tension: 0.3 }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: { unit: 'day', displayFormats: { day: 'dd MMM' } },
-                            grid: { display: false }
-                        },
-                        y: {
-                            title: { display: true, text: 'Kg' },
-                            grid: { color: '#f1f5f9' }
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
         function renderHeightChart(data) {
             const ctx = document.getElementById('heightChart').getContext('2d');
-            
-            const labels = data.map(d => new Date(d.datetime));
-            const values = data.map(d => d.value);
-
             if (heightChartInstance) heightChartInstance.destroy();
-
             heightChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Talla (cm)',
-                        data: values,
-                        borderColor: '#ffb5a7',
-                        backgroundColor: 'rgba(255, 181, 167, 0.2)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.2,
-                        pointBackgroundColor: '#e08b7b',
-                        pointRadius: 5
-                    }]
+                    labels: data.map(d => new Date(d.datetime)),
+                    datasets: [{ label: 'Talla (cm)', data: data.map(d => d.value), borderColor: '#ffb5a7', backgroundColor: 'rgba(255,181,167,0.2)', borderWidth: 3, fill: true, tension: 0.2 }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: { unit: 'day', displayFormats: { day: 'dd MMM' } },
-                            grid: { display: false }
-                        },
-                        y: {
-                            title: { display: true, text: 'cm' },
-                            grid: { color: '#f1f5f9' }
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        // Modal Logic
-        function openConfigModal() {
-            document.getElementById('modal-config').classList.add('active');
-        }
-
-        function closeConfigModal() {
-            document.getElementById('modal-config').classList.remove('active');
-        }
+        function openConfigModal() { document.getElementById('modal-config').classList.add('active'); }
+        function closeConfigModal() { document.getElementById('modal-config').classList.remove('active'); }
 
         function saveConfiguration() {
             babyConfig.name = document.getElementById('config-baby-name').value || "JOAN";
             babyConfig.birthdate = document.getElementById('config-baby-birth').value;
             babyConfig.firebaseConfig = document.getElementById('config-firebase-json').value;
-
             localStorage.setItem('baby_config', JSON.stringify(babyConfig));
-            
             loadConfig();
             closeConfigModal();
-            showToast('Configuración guardada');
-
-            if (babyConfig.firebaseConfig && window.initFirebase) {
-                window.initFirebase(babyConfig.firebaseConfig);
-            }
+            showToast('Guardado');
+            if (babyConfig.firebaseConfig && window.initFirebase) window.initFirebase(babyConfig.firebaseConfig);
         }
 
         function showToast(msg) {
             const toast = document.getElementById('toast-msg');
             document.getElementById('toast-text').innerText = msg;
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
     </script>
 </body>
