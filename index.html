@@ -79,7 +79,12 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .edit-baby-btn {
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-header-action {
             background: rgba(255, 255, 255, 0.22);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
@@ -93,6 +98,11 @@
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        .btn-header-action:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-1px);
         }
 
         .sync-badge {
@@ -497,7 +507,9 @@
             border-radius: var(--border-radius);
             padding: 26px;
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .toast {
@@ -515,6 +527,49 @@
         }
 
         .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* Report Modal Options Cards */
+        .report-option-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .report-option-card:hover {
+            border-color: var(--primary);
+            background: #f7faf9;
+            transform: translateY(-2px);
+        }
+
+        .report-icon {
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Print Container Rules for generating clean PDFs */
+        @media print {
+            body * { visibility: hidden; }
+            #printable-report, #printable-report * { visibility: visible; }
+            #printable-report {
+                position: absolute;
+                left: 0; top: 0;
+                width: 100%;
+                padding: 20px;
+                background: white;
+                color: #000;
+            }
+        }
     </style>
 </head>
 <body>
@@ -527,9 +582,14 @@
                     <h1 id="baby-name-display">JOAN 🍼</h1>
                     <div class="age-counter" id="baby-age-display">Calculando edad...</div>
                 </div>
-                <button class="edit-baby-btn" onclick="openConfigModal()">
-                    <i class="fa-solid fa-gear"></i> Ajustes / Sync
-                </button>
+                <div class="header-actions">
+                    <button class="btn-header-action" onclick="openReportModal()">
+                        <i class="fa-solid fa-file-pdf"></i> Informe
+                    </button>
+                    <button class="btn-header-action" onclick="openConfigModal()">
+                        <i class="fa-solid fa-gear"></i> Ajustes
+                    </button>
+                </div>
             </div>
             
             <div class="sync-badge">
@@ -766,6 +826,39 @@
 
     </main>
 
+    <!-- Modal Report Selector -->
+    <div class="modal-backdrop" id="modal-report">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+                <h3 style="font-family:'Quicksand', sans-serif;"><i class="fa-solid fa-file-export"></i> Generar Informe</h3>
+                <button style="background:none; border:none; font-size:1.2rem; cursor:pointer;" onclick="closeReportModal()">✕</button>
+            </div>
+
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">
+                Selecciona el tipo de informe que deseas exportar o imprimir en PDF:
+            </p>
+
+            <div class="report-option-card" onclick="generateReport('pediatric')">
+                <div class="report-icon" style="background:#e8f4f4; color:var(--primary-dark);">🏥</div>
+                <div>
+                    <strong style="display:block; font-size:1rem; color:var(--text-main);">Informe Clínico Pedriátrico</strong>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">Formato formal y ejecutivo con promedios, ganancias de peso e métricas de salud.</span>
+                </div>
+            </div>
+
+            <div class="report-option-card" onclick="generateReport('family')">
+                <div class="report-icon" style="background:#fcd5ce; color:var(--secondary-dark);">🍼</div>
+                <div>
+                    <strong style="display:block; font-size:1rem; color:var(--text-main);">Informe Distendido Familiar</strong>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">Formato cariñoso y cercano para compartir por WhatsApp con abuelos y tíos.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Printable Hidden Report Template Container -->
+    <div id="printable-report" style="display:none;"></div>
+
     <!-- Modal Config / Firebase -->
     <div class="modal-backdrop" id="modal-config">
         <div class="modal-card">
@@ -896,7 +989,6 @@
             event.currentTarget.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
 
-            // Force resize charts on tab switch to fix hidden mobile canvas issue
             setTimeout(() => {
                 if (tabId === 'peso') renderWeightSection();
                 if (tabId === 'altura') renderHeightSection();
@@ -911,7 +1003,6 @@
             document.getElementById('feeding-pecho-fields').style.display = type === 'pecho' ? 'block' : 'none';
         }
 
-        // Timer Logic
         function toggleBreastTimer(side) {
             const btnLeft = document.getElementById('btn-timer-left');
             const btnRight = document.getElementById('btn-timer-right');
@@ -1180,6 +1271,16 @@
             if (weights.length > 0) {
                 const last = weights[weights.length - 1];
                 document.getElementById('stat-last-weight').innerText = `${(last.value / 1000).toFixed(2)} kg`;
+
+                if (weights.length > 1) {
+                    const prev = weights[weights.length - 2];
+                    const diffG = last.value - prev.value;
+                    const diffD = (last.timestamp - prev.timestamp) / (1000 * 60 * 60 * 24);
+                    if (diffD > 0) {
+                        const daily = Math.round(diffG / diffD);
+                        document.getElementById('stat-weight-inc').innerText = `${daily >= 0 ? '+':''}${daily} g/día`;
+                    }
+                }
             }
 
             const heights = JSON.parse(localStorage.getItem('baby_heights') || '[]').sort((a,b) => a.timestamp - b.timestamp);
@@ -1319,8 +1420,133 @@
             });
         }
 
+        // REPORT GENERATION LOGIC
+        function openReportModal() { document.getElementById('modal-report').classList.add('active'); }
+        function closeReportModal() { document.getElementById('modal-report').classList.remove('active'); }
         function openConfigModal() { document.getElementById('modal-config').classList.add('active'); }
         function closeConfigModal() { document.getElementById('modal-config').classList.remove('active'); }
+
+        function generateReport(type) {
+            closeReportModal();
+
+            const weights = JSON.parse(localStorage.getItem('baby_weights') || '[]').sort((a,b) => a.timestamp - b.timestamp);
+            const heights = JSON.parse(localStorage.getItem('baby_heights') || '[]').sort((a,b) => a.timestamp - b.timestamp);
+            const feedings = JSON.parse(localStorage.getItem('baby_feedings') || '[]').sort((a,b) => b.timestamp - a.timestamp);
+            const diapers = JSON.parse(localStorage.getItem('baby_diapers') || '[]').sort((a,b) => b.timestamp - a.timestamp);
+
+            const lastWeight = weights.length > 0 ? (weights[weights.length - 1].value / 1000).toFixed(2) : '--';
+            const lastHeight = heights.length > 0 ? heights[heights.length - 1].value : '--';
+
+            let dailyGainText = "+0 g/día";
+            if (weights.length > 1) {
+                const w1 = weights[weights.length - 2];
+                const w2 = weights[weights.length - 1];
+                const diffG = w2.value - w1.value;
+                const diffD = (w2.timestamp - w1.timestamp) / (1000 * 60 * 60 * 24);
+                if (diffD > 0) dailyGainText = `+${Math.round(diffG / diffD)} g/día`;
+            }
+
+            const today = new Date().toLocaleDateString('es-ES', { day:'numeric', month:'long', year:'numeric' });
+            const reportContainer = document.getElementById('printable-report');
+
+            if (type === 'pediatric') {
+                // Formal Executive Pediatric Report
+                reportContainer.innerHTML = `
+                    <div style="font-family: Arial, sans-serif; max-width: 750px; margin: 0 auto; color: #1a202c; border: 1px solid #cbd5e0; padding: 30px; border-radius: 8px;">
+                        <div style="border-bottom: 2px solid #319795; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+                            <div>
+                                <h1 style="font-size: 20pt; margin: 0; color: #2c7a7b; text-transform: uppercase;">INFORME CLÍNICO PEDIÁTRICO</h1>
+                                <p style="margin: 4px 0 0 0; font-size: 10pt; color: #4a5568;">PACIENTE: <strong>JOAN</strong></p>
+                            </div>
+                            <div style="text-align: right; font-size: 9pt; color: #718096;">
+                                <p style="margin:0;">Fecha de emisión: ${today}</p>
+                                <p style="margin:0;">Edad: ${document.getElementById('baby-age-display').innerText}</p>
+                            </div>
+                        </div>
+
+                        <h3 style="font-size: 11pt; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; color: #2d3748; text-transform: uppercase;">1. Parámetros Somatométricos</h3>
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10pt;">
+                            <thead>
+                                <tr style="background: #edf2f7; text-align: left;">
+                                    <th style="padding: 8px; border: 1px solid #cbd5e0;">Parámetro</th>
+                                    <th style="padding: 8px; border: 1px solid #cbd5e0;">Último Valor Registrado</th>
+                                    <th style="padding: 8px; border: 1px solid #cbd5e0;">Incremento Ponderal Estimado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #cbd5e0;">Peso Corporal</td>
+                                    <td style="padding: 8px; border: 1px solid #cbd5e0;"><strong>${lastWeight} kg</strong></td>
+                                    <td style="padding: 8px; border: 1px solid #cbd5e0;">${dailyGainText}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #cbd5e0;">Longitud / Talla</td>
+                                    <td style="padding: 8px; border: 1px solid #cbd5e0;"><strong>${lastHeight} cm</strong></td>
+                                    <td style="padding: 8px; border: 1px solid #cbd5e0;">Evolución fisiológica normal</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h3 style="font-size: 11pt; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; color: #2d3748; text-transform: uppercase;">2. Resumen Nutricional y Deposiciones (Último Registro)</h3>
+                        <div style="display: flex; gap: 20px; margin-bottom: 20px; font-size: 10pt;">
+                            <div style="flex:1; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; background: #f7fafc;">
+                                <strong>Alimentación Registrada:</strong>
+                                <p style="margin: 6px 0 0 0;">• Entradas Biberón: ${feedings.filter(f=>f.type==='biberon').length} registros</p>
+                                <p style="margin: 4px 0 0 0;">• Entradas Pecho: ${feedings.filter(f=>f.type==='pecho').length} registros</p>
+                            </div>
+                            <div style="flex:1; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; background: #f7fafc;">
+                                <strong>Diuresis y Deposiciones:</strong>
+                                <p style="margin: 6px 0 0 0;">• Cambio de Pañales: ${diapers.length} registros totales</p>
+                                <p style="margin: 4px 0 0 0;">• Frecuencia Diuresis/Heces fisiológica</p>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 10px; font-size: 8pt; color: #a0aec0; text-align: center;">
+                            Documento informativo generado automáticamente por Baby Tracker App para uso clínico.
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Cute Distended Family Report
+                reportContainer.innerHTML = `
+                    <div style="font-family: 'Quicksand', sans-serif; max-width: 700px; margin: 0 auto; color: #2d3748; background: #fcf6f5; padding: 30px; border-radius: 20px; border: 3px solid #ffb5a7;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h1 style="font-size: 24pt; margin: 0; color: #e08b7b;">👶 ¡ASI VOY CRECIENDO! 🍼</h1>
+                            <h2 style="font-size: 16pt; margin: 4px 0; color: #51a3a3;">Informe de JOAN</h2>
+                            <span style="font-size: 10pt; background: #fff; padding: 4px 12px; border-radius: 20px; color: #718096; display: inline-block; margin-top: 6px;">
+                                Emitido con amor el ${today}
+                            </span>
+                        </div>
+
+                        <div style="background: white; padding: 20px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                            <h3 style="margin-top:0; color:#51a3a3; font-size: 13pt;">🌟 Mis Hitos de Crecimiento</h3>
+                            <ul style="list-style: none; padding: 0; margin: 0; font-size: 11pt; line-height: 1.8;">
+                                <li>🎈 <strong>Edad actual:</strong> ${document.getElementById('baby-age-display').innerText}</li>
+                                <li>🏋️‍♂️ <strong>Mi peso actual:</strong> ${lastWeight} kg (${dailyGainText})</li>
+                                <li>📏 <strong>Mi altura:</strong> ${lastHeight} cm</li>
+                            </ul>
+                        </div>
+
+                        <div style="background: white; padding: 20px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+                            <h3 style="margin-top:0; color:#e08b7b; font-size: 13pt;">🍼 Mi Día a Día</h3>
+                            <p style="font-size: 10.5pt; margin: 0; line-height: 1.6;">
+                                ¡Estoy comiendo y durmiendo genial! Papá y mamá están registrando todas mis tomas y pañales para que esté super sano y contento. ❤️
+                            </p>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 20px; font-size: 9pt; color: #a0aec0;">
+                            ✨ Enviado con cariño para la familia de Joan ✨
+                        </div>
+                    </div>
+                `;
+            }
+
+            reportContainer.style.display = 'block';
+            setTimeout(() => {
+                window.print();
+                reportContainer.style.display = 'none';
+            }, 300);
+        }
 
         function saveConfiguration() {
             babyConfig.name = document.getElementById('config-baby-name').value || "JOAN";
