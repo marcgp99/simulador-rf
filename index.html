@@ -55,7 +55,7 @@
             min-height: 100vh;
         }
 
-        /* App Header Header Warm Mint Gradient */
+        /* App Header Warm Mint Gradient */
         .app-header {
             background: linear-gradient(135deg, #51a3a3 0%, #68b0ab 50%, #80ed99 100%);
             color: white;
@@ -919,7 +919,7 @@
                 babyConfig = JSON.parse(saved);
             }
             
-            // Override or set name to JOAN if missing or set to default "Mi Bebé"
+            // Force JOAN as the name if it was previously set to default
             if (!babyConfig.name || babyConfig.name === "Mi Bebé") {
                 babyConfig.name = "JOAN";
                 localStorage.setItem('baby_config', JSON.stringify(babyConfig));
