@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Baby Tracker 👶 - Seguimiento de Bebé</title>
-    <!-- Google Fonts: Outfits & Quicksand -->
+    <title>Baby Tracker 👶 - Seguimiento de JOAN</title>
+    <!-- Google Fonts: Outfit & Quicksand -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
@@ -16,20 +16,27 @@
 
     <style>
         :root {
-            --bg-color: #f7f9fc;
+            --bg-color: #f7faf8;
             --card-bg: #ffffff;
-            --primary: #7c9ebc;
-            --primary-light: #e8f1f5;
-            --primary-dark: #587996;
-            --secondary: #f4acb7;
-            --secondary-light: #ffe5ec;
-            --accent-yellow: #fbe7c6;
-            --accent-green: #b5e2fa;
-            --text-main: #2b2d42;
-            --text-muted: #8d99ae;
-            --border-radius: 20px;
-            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
-            --shadow-hover: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
+            
+            /* Warm Mint & Peach Palette */
+            --primary: #51a3a3;
+            --primary-light: #e8f4f4;
+            --primary-dark: #377171;
+            
+            --secondary: #ffb5a7;
+            --secondary-light: #fcd5ce;
+            --secondary-dark: #e08b7b;
+
+            --accent-peach: #f8ad9d;
+            --accent-sage: #80ed99;
+            --accent-warm: #fbc4ab;
+
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --border-radius: 22px;
+            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            --shadow-hover: 0 18px 30px -10px rgba(81, 163, 163, 0.15);
             --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -48,14 +55,14 @@
             min-height: 100vh;
         }
 
-        /* App Container */
+        /* App Header Header Warm Mint Gradient */
         .app-header {
-            background: linear-gradient(135deg, #7c9ebc 0%, #9cb3c9 100%);
+            background: linear-gradient(135deg, #51a3a3 0%, #68b0ab 50%, #80ed99 100%);
             color: white;
-            padding: 24px 20px 32px 20px;
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            box-shadow: 0 10px 20px rgba(124, 158, 188, 0.2);
+            padding: 26px 20px 36px 20px;
+            border-bottom-left-radius: 32px;
+            border-bottom-right-radius: 32px;
+            box-shadow: 0 12px 24px rgba(81, 163, 163, 0.2);
             position: relative;
         }
 
@@ -67,31 +74,34 @@
         }
 
         .baby-info-main h1 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
             font-family: 'Quicksand', sans-serif;
             display: flex;
             align-items: center;
             gap: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .edit-baby-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 8px 12px;
+            padding: 9px 14px;
             border-radius: 50px;
             cursor: pointer;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
             transition: var(--transition);
             font-size: 0.85rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
         .edit-baby-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-1px);
         }
 
         /* Sync Status Badge */
@@ -99,35 +109,37 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 14px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            backdrop-filter: blur(5px);
+            font-size: 0.82rem;
+            font-weight: 500;
+            backdrop-filter: blur(8px);
         }
 
         .sync-dot {
-            width: 8px;
-            height: 8px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
             background-color: #2ecc71;
-            box-shadow: 0 0 8px #2ecc71;
+            box-shadow: 0 0 10px #2ecc71;
         }
 
         .sync-dot.offline {
             background-color: #f1c40f;
-            box-shadow: 0 0 8px #f1c40f;
+            box-shadow: 0 0 10px #f1c40f;
         }
 
         .age-counter {
             font-size: 0.95rem;
             opacity: 0.95;
-            font-weight: 500;
-            background: rgba(255, 255, 255, 0.15);
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
             padding: 8px 16px;
-            border-radius: 12px;
+            border-radius: 14px;
             display: inline-block;
             margin-top: 6px;
+            backdrop-filter: blur(5px);
         }
 
         /* Container Main */
@@ -142,7 +154,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 14px;
-            margin-top: -20px;
+            margin-top: -22px;
             margin-bottom: 24px;
         }
 
@@ -154,7 +166,7 @@
 
         .card-stat {
             background: var(--card-bg);
-            padding: 16px;
+            padding: 16px 18px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-soft);
             display: flex;
@@ -167,29 +179,34 @@
         }
 
         .card-stat:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow-hover);
         }
 
         .card-stat .icon-bg {
             position: absolute;
-            right: -10px;
-            bottom: -10px;
+            right: -8px;
+            bottom: -8px;
             font-size: 3.5rem;
-            opacity: 0.08;
+            opacity: 0.12;
             color: var(--primary);
         }
 
+        .card-stat.stat-weight { border-top: 4px solid var(--primary); }
+        .card-stat.stat-height { border-top: 4px solid var(--secondary); }
+        .card-stat.stat-feeding { border-top: 4px solid var(--accent-peach); }
+        .card-stat.stat-diaper { border-top: 4px solid #f6bd60; }
+
         .card-stat .title {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .card-stat .value {
-            font-size: 1.4rem;
+            font-size: 1.45rem;
             font-weight: 700;
             color: var(--text-main);
         }
@@ -203,20 +220,20 @@
         /* Navigation Tabs */
         .tabs-nav {
             display: flex;
-            background: #e2e8f0;
-            padding: 5px;
-            border-radius: 16px;
-            margin-bottom: 20px;
+            background: #eef2f0;
+            padding: 6px;
+            border-radius: 18px;
+            margin-bottom: 22px;
             gap: 4px;
             overflow-x: auto;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 10px 14px;
+            padding: 11px 14px;
             border: none;
             background: transparent;
-            border-radius: 12px;
+            border-radius: 14px;
             font-weight: 600;
             font-size: 0.9rem;
             color: var(--text-muted);
@@ -232,7 +249,7 @@
         .tab-btn.active {
             background: var(--card-bg);
             color: var(--primary-dark);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(81, 163, 163, 0.12);
         }
 
         /* Sections */
@@ -254,7 +271,7 @@
         .section-card {
             background: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 20px;
+            padding: 22px;
             box-shadow: var(--shadow-soft);
             margin-bottom: 20px;
             border: 1px solid rgba(0,0,0,0.03);
@@ -265,12 +282,12 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 18px;
-            border-bottom: 2px solid #f1f5f9;
+            border-bottom: 2px solid #f2f7f5;
             padding-bottom: 10px;
         }
 
         .section-header h2 {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--text-main);
             display: flex;
@@ -301,37 +318,37 @@
 
         .form-control {
             padding: 12px 14px;
-            border: 2px solid #edf2f7;
-            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
             font-size: 0.95rem;
             outline: none;
             transition: var(--transition);
-            background: #f8fafc;
+            background: #fdfefe;
         }
 
         .form-control:focus {
             border-color: var(--primary);
             background: #fff;
-            box-shadow: 0 0 0 3px rgba(124, 158, 188, 0.15);
+            box-shadow: 0 0 0 3.5px rgba(81, 163, 163, 0.15);
         }
 
         /* Type Selector Pills */
         .pill-selector {
             display: flex;
             gap: 8px;
-            background: #f1f5f9;
-            padding: 4px;
-            border-radius: 12px;
+            background: #f0f4f2;
+            padding: 5px;
+            border-radius: 14px;
         }
 
         .pill-btn {
             flex: 1;
-            padding: 8px 12px;
+            padding: 9px 12px;
             border: none;
             background: transparent;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             cursor: pointer;
             color: var(--text-muted);
             transition: var(--transition);
@@ -340,17 +357,17 @@
         .pill-btn.active {
             background: var(--card-bg);
             color: var(--primary);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
         }
 
         /* Primary Action Buttons */
         .btn-submit {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
@@ -359,12 +376,12 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 4px 12px rgba(124, 158, 188, 0.3);
+            box-shadow: 0 4px 14px rgba(81, 163, 163, 0.3);
         }
 
         .btn-submit:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(124, 158, 188, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(81, 163, 163, 0.4);
         }
 
         .btn-submit:active {
@@ -390,9 +407,9 @@
         }
 
         .history-item {
-            background: #f8fafc;
-            padding: 12px 16px;
-            border-radius: 12px;
+            background: #f9fbfb;
+            padding: 14px 18px;
+            border-radius: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -401,7 +418,7 @@
         }
 
         .history-item:hover {
-            background: #f1f5f9;
+            background: #f1f7f5;
         }
 
         .item-details {
@@ -412,12 +429,12 @@
 
         .item-title {
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.98rem;
             color: var(--text-main);
         }
 
         .item-sub {
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
         }
 
@@ -432,7 +449,7 @@
             background: transparent;
             border: none;
             color: #e74c3c;
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: pointer;
             padding: 6px;
             margin-left: 10px;
@@ -441,15 +458,15 @@
 
         .btn-delete:hover {
             opacity: 1;
-            transform: scale(1.1);
+            transform: scale(1.15);
         }
 
         /* Config Modal */
         .modal-backdrop {
             position: fixed;
             top:0; left:0; right:0; bottom:0;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(5px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -464,7 +481,7 @@
         .modal-card {
             background: white;
             border-radius: var(--border-radius);
-            padding: 24px;
+            padding: 26px;
             width: 100%;
             max-width: 480px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
@@ -480,24 +497,24 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .modal-header h3 {
             font-family: 'Quicksand', sans-serif;
-            font-size: 1.3rem;
+            font-size: 1.35rem;
         }
 
         /* Firebase Config Help Box */
         .firebase-help {
             background: #fff8e1;
             border: 1px solid #ffe082;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.8rem;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 0.82rem;
             color: #7f6000;
             margin-bottom: 14px;
-            line-height: 1.4;
+            line-height: 1.45;
         }
 
         /* Toast Notifications */
@@ -506,7 +523,7 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: #323232;
+            background: #2d3748;
             color: white;
             padding: 12px 24px;
             border-radius: 50px;
@@ -526,13 +543,13 @@
         /* Empty state */
         .empty-state {
             text-align: center;
-            padding: 30px 10px;
+            padding: 32px 10px;
             color: var(--text-muted);
         }
 
         .empty-state i {
-            font-size: 2.5rem;
-            margin-bottom: 8px;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
             opacity: 0.3;
         }
     </style>
@@ -544,7 +561,7 @@
         <div class="container">
             <div class="header-top">
                 <div class="baby-info-main">
-                    <h1 id="baby-name-display">Mi Bebé 🍼</h1>
+                    <h1 id="baby-name-display">JOAN 🍼</h1>
                     <div class="age-counter" id="baby-age-display">Calculando edad...</div>
                 </div>
                 <button class="edit-baby-btn" onclick="openConfigModal()">
@@ -564,25 +581,25 @@
 
         <!-- Quick Summary Metrics -->
         <section class="summary-grid">
-            <div class="card-stat">
+            <div class="card-stat stat-weight">
                 <i class="fa-solid fa-scale-balanced icon-bg"></i>
                 <span class="title">Último Peso</span>
                 <span class="value" id="stat-last-weight">-- kg</span>
                 <span class="subtitle" id="stat-weight-inc">+0 g/día</span>
             </div>
-            <div class="card-stat">
+            <div class="card-stat stat-height">
                 <i class="fa-solid fa-ruler-vertical icon-bg"></i>
                 <span class="title">Última Talla</span>
                 <span class="value" id="stat-last-height">-- cm</span>
                 <span class="subtitle" id="stat-height-date">Sin registros</span>
             </div>
-            <div class="card-stat">
+            <div class="card-stat stat-feeding">
                 <i class="fa-solid fa-bottle-droplet icon-bg"></i>
                 <span class="title">Tomas Hoy</span>
                 <span class="value" id="stat-today-feedings">0</span>
                 <span class="subtitle" id="stat-today-ml">0 ml totales</span>
             </div>
-            <div class="card-stat">
+            <div class="card-stat stat-diaper">
                 <i class="fa-solid fa-baby icon-bg"></i>
                 <span class="title">Pañales Hoy</span>
                 <span class="value" id="stat-today-diapers">0</span>
@@ -648,7 +665,7 @@
         <div id="tab-altura" class="tab-content">
             <div class="section-card">
                 <div class="section-header">
-                    <h2><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Anotar Talla / Altura</h2>
+                    <h2><i class="fa-solid fa-plus-circle" style="color: var(--secondary-dark);"></i> Anotar Talla / Altura</h2>
                 </div>
                 <form id="form-height" onsubmit="handleAddHeight(event)">
                     <div class="form-grid">
@@ -661,13 +678,13 @@
                             <input type="number" id="height-value" class="form-control" placeholder="ej. 52.5" min="30" max="120" step="0.1" required>
                         </div>
                     </div>
-                    <button type="submit" class="btn-submit"><i class="fa-solid fa-floppy-disk"></i> Guardar Talla</button>
+                    <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, var(--secondary-dark) 0%, #c86d5e 100%);"><i class="fa-solid fa-floppy-disk"></i> Guardar Talla</button>
                 </form>
             </div>
 
             <div class="section-card">
                 <div class="section-header">
-                    <h2><i class="fa-solid fa-chart-line" style="color: var(--primary);"></i> Curva de Crecimiento</h2>
+                    <h2><i class="fa-solid fa-chart-line" style="color: var(--secondary-dark);"></i> Curva de Crecimiento</h2>
                 </div>
                 <div class="chart-box">
                     <canvas id="heightChart"></canvas>
@@ -676,7 +693,7 @@
 
             <div class="section-card">
                 <div class="section-header">
-                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Histórico de Talla</h2>
+                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--secondary-dark);"></i> Histórico de Talla</h2>
                 </div>
                 <div class="history-list" id="height-history"></div>
             </div>
@@ -743,7 +760,7 @@
         <div id="tab-panales" class="tab-content">
             <div class="section-card">
                 <div class="section-header">
-                    <h2><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Anotar Pañal</h2>
+                    <h2><i class="fa-solid fa-plus-circle" style="color: #f6bd60;"></i> Anotar Pañal</h2>
                 </div>
                 <form id="form-diaper" onsubmit="handleAddDiaper(event)">
                     <div class="form-grid">
@@ -765,13 +782,13 @@
                         <label>Notas opcionales</label>
                         <input type="text" id="diaper-notes" class="form-control" placeholder="ej. Consistencia normal, poco pipí...">
                     </div>
-                    <button type="submit" class="btn-submit"><i class="fa-solid fa-floppy-disk"></i> Registrar Pañal</button>
+                    <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #e5a93c 0%, #c98818 100%);"><i class="fa-solid fa-floppy-disk"></i> Registrar Pañal</button>
                 </form>
             </div>
 
             <div class="section-card">
                 <div class="section-header">
-                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Histórico de Pañales</h2>
+                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: #f6bd60;"></i> Histórico de Pañales</h2>
                 </div>
                 <div class="history-list" id="diaper-history"></div>
             </div>
@@ -789,7 +806,7 @@
 
             <div class="form-group" style="margin-bottom: 14px;">
                 <label>Nombre del Bebé</label>
-                <input type="text" id="config-baby-name" class="form-control" placeholder="ej. Mateo">
+                <input type="text" id="config-baby-name" class="form-control" placeholder="ej. JOAN">
             </div>
 
             <div class="form-group" style="margin-bottom: 20px;">
@@ -873,7 +890,7 @@
     <script>
         // State variables
         let babyConfig = {
-            name: "Mi Bebé",
+            name: "JOAN",
             birthdate: new Date().toISOString().split('T')[0],
             firebaseConfig: ""
         };
@@ -901,8 +918,10 @@
             if (saved) {
                 babyConfig = JSON.parse(saved);
             }
-            document.getElementById('baby-name-display').innerText = (babyConfig.name || "Mi Bebé") + " 🍼";
-            document.getElementById('config-baby-name').value = babyConfig.name || "";
+            if (!babyConfig.name) babyConfig.name = "JOAN";
+            
+            document.getElementById('baby-name-display').innerText = babyConfig.name + " 🍼";
+            document.getElementById('config-baby-name').value = babyConfig.name;
             document.getElementById('config-baby-birth').value = babyConfig.birthdate || "";
             document.getElementById('config-firebase-json').value = babyConfig.firebaseConfig || "";
             
@@ -1143,6 +1162,7 @@
 
                 const div = document.createElement('div');
                 div.className = 'history-item';
+                div.style.borderLeftColor = 'var(--secondary)';
                 div.innerHTML = `
                     <div class="item-details">
                         <span class="item-title">${current.value} cm</span>
@@ -1177,7 +1197,7 @@
 
                 const div = document.createElement('div');
                 div.className = 'history-item';
-                div.style.borderLeftColor = item.type === 'biberon' ? '#7c9ebc' : '#f4acb7';
+                div.style.borderLeftColor = item.type === 'biberon' ? 'var(--primary)' : 'var(--secondary)';
                 div.innerHTML = `
                     <div class="item-details">
                         <span class="item-title">${detailsText}</span>
@@ -1209,7 +1229,7 @@
 
                 const div = document.createElement('div');
                 div.className = 'history-item';
-                div.style.borderLeftColor = '#fbe7c6';
+                div.style.borderLeftColor = '#f6bd60';
                 div.innerHTML = `
                     <div class="item-details">
                         <span class="item-title">${item.type}</span>
@@ -1293,12 +1313,12 @@
                     datasets: [{
                         label: 'Peso (kg)',
                         data: values,
-                        borderColor: '#7c9ebc',
-                        backgroundColor: 'rgba(124, 158, 188, 0.15)',
+                        borderColor: '#51a3a3',
+                        backgroundColor: 'rgba(81, 163, 163, 0.15)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.35,
-                        pointBackgroundColor: '#587996',
+                        pointBackgroundColor: '#377171',
                         pointRadius: 5
                     }]
                 },
@@ -1336,12 +1356,12 @@
                     datasets: [{
                         label: 'Talla (cm)',
                         data: values,
-                        borderColor: '#f4acb7',
-                        backgroundColor: 'rgba(244, 172, 183, 0.15)',
+                        borderColor: '#ffb5a7',
+                        backgroundColor: 'rgba(255, 181, 167, 0.2)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.2,
-                        pointBackgroundColor: '#d88391',
+                        pointBackgroundColor: '#e08b7b',
                         pointRadius: 5
                     }]
                 },
@@ -1374,7 +1394,7 @@
         }
 
         function saveConfiguration() {
-            babyConfig.name = document.getElementById('config-baby-name').value;
+            babyConfig.name = document.getElementById('config-baby-name').value || "JOAN";
             babyConfig.birthdate = document.getElementById('config-baby-birth').value;
             babyConfig.firebaseConfig = document.getElementById('config-firebase-json').value;
 
