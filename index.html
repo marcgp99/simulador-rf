@@ -3,745 +3,1399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ixorigue RF Simulator | Pro</title>
-    
+    <title>Baby Tracker 👶 - Seguimiento de Bebé</title>
+    <!-- Google Fonts: Outfits & Quicksand -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
     <style>
-        body { background-color: #0B1120; color: #e2e8f0; font-family: 'Inter', sans-serif; }
-        #map { height: 100%; width: 100%; border-radius: 0.75rem; z-index: 1; }
-        
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --primary: #7c9ebc;
+            --primary-light: #e8f1f5;
+            --primary-dark: #587996;
+            --secondary: #f4acb7;
+            --secondary-light: #ffe5ec;
+            --accent-yellow: #fbe7c6;
+            --accent-green: #b5e2fa;
+            --text-main: #2b2d42;
+            --text-muted: #8d99ae;
+            --border-radius: 20px;
+            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+            --shadow-hover: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-
-        .toggle-checkbox:checked { right: 0; border-color: #10b981; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #10b981; }
-        
-        .glow-hover:hover { box-shadow: 0 0 20px rgba(57, 255, 20, 0.4); }
-        .neon-orange-pin { filter: drop-shadow(0 0 5px rgba(255, 126, 0, 0.8)); }
-
-        /* Etiqueta flotante GLOBAL (Centro) */
-        .cobertura-badge {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            margin-top: -20px !important; 
-            margin-left: -50px !important; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Etiqueta flotante LOCAL (Encima del pin) sin fondos de Leaflet */
-        .pin-tooltip {
-            background-color: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 90px;
+            min-height: 100vh;
+        }
+
+        /* App Container */
+        .app-header {
+            background: linear-gradient(135deg, #7c9ebc 0%, #9cb3c9 100%);
+            color: white;
+            padding: 24px 20px 32px 20px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 10px 20px rgba(124, 158, 188, 0.2);
+            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .baby-info-main h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Quicksand', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .edit-baby-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .edit-baby-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Sync Status Badge */
+        .sync-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #2ecc71;
+            box-shadow: 0 0 8px #2ecc71;
+        }
+
+        .sync-dot.offline {
+            background-color: #f1c40f;
+            box-shadow: 0 0 8px #f1c40f;
+        }
+
+        .age-counter {
+            font-size: 0.95rem;
+            opacity: 0.95;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        /* Container Main */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* Summary Cards Grid */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: -20px;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 600px) {
+            .summary-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .card-stat {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: var(--transition);
+        }
+
+        .card-stat:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-stat .icon-bg {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 3.5rem;
+            opacity: 0.08;
+            color: var(--primary);
+        }
+
+        .card-stat .title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-stat .value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .card-stat .subtitle {
+            font-size: 0.75rem;
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        /* Navigation Tabs */
+        .tabs-nav {
+            display: flex;
+            background: #e2e8f0;
+            padding: 5px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            gap: 4px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Sections */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Section Layout */
+        .section-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+
+        .section-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            padding: 12px 14px;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+            background: #f8fafc;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(124, 158, 188, 0.15);
+        }
+
+        /* Type Selector Pills */
+        .pill-selector {
+            display: flex;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .pill-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .pill-btn.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        /* Primary Action Buttons */
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(124, 158, 188, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(124, 158, 188, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Charts Container */
+        .chart-box {
+            position: relative;
+            height: 280px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        /* Data Tables / History List */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 320px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .history-item {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .history-item:hover {
+            background: #f1f5f9;
+        }
+
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .item-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .item-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .item-value {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--primary-dark);
+            text-align: right;
+        }
+
+        .btn-delete {
+            background: transparent;
+            border: none;
+            color: #e74c3c;
+            opacity: 0.5;
+            cursor: pointer;
+            padding: 6px;
+            margin-left: 10px;
+            transition: var(--transition);
+        }
+
+        .btn-delete:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Config Modal */
+        .modal-backdrop {
+            position: fixed;
+            top:0; left:0; right:0; bottom:0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: modalIn 0.25s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-header h3 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.3rem;
+        }
+
+        /* Firebase Config Help Box */
+        .firebase-help {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #7f6000;
+            margin-bottom: 14px;
+            line-height: 1.4;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #323232;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Empty state */
+        .empty-state {
             text-align: center;
-            font-family: 'Inter', sans-serif !important;
-            font-weight: 800 !important;
-            text-shadow: 
-                -1px -1px 0 #000,  
-                 1px -1px 0 #000,
-                -1px  1px 0 #000,
-                 1px  1px 0 #000,
-                 0px  4px 10px rgba(0,0,0,0.8) !important;
+            padding: 30px 10px;
+            color: var(--text-muted);
         }
-        .pin-tooltip::before {
-            display: none !important;
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            opacity: 0.3;
         }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
+<body>
 
-    <div id="demo-banner" class="hidden w-full text-center py-2 text-xs font-semibold tracking-wide shadow-md z-20 relative bg-amber-500/10 text-amber-400 border-b border-amber-500/20 uppercase"></div>
-
-    <header class="bg-[#0B1120]/95 backdrop-blur border-b border-slate-800/80 py-4 px-6 flex items-center justify-between z-10 relative">
-        <div class="flex items-center gap-3 w-1/3">
-            <svg class="w-7 h-7 text-[#39FF14] drop-shadow-[0_0_8px_rgba(57,255,20,0.8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.106-.53-.106a.75.75 0 01-.6-1.07l.6-.8a.75.75 0 011.2 0l.6.8a.75.75 0 01-.6 1.07z"></path></svg>
-            <h1 class="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-500">
-                IXORIGUE RF Coverage Simulator <span class="text-slate-500 font-medium text-sm ml-1 uppercase tracking-widest">| Pro</span>
-            </h1>
+    <!-- Header Section -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-top">
+                <div class="baby-info-main">
+                    <h1 id="baby-name-display">Mi Bebé 🍼</h1>
+                    <div class="age-counter" id="baby-age-display">Calculando edad...</div>
+                </div>
+                <button class="edit-baby-btn" onclick="openConfigModal()">
+                    <i class="fa-solid fa-gear"></i> Ajustes / Sync
+                </button>
+            </div>
+            
+            <div class="sync-badge">
+                <span class="sync-dot" id="sync-indicator"></span>
+                <span id="sync-status-text">Almacenamiento Local (Sin Sync)</span>
+            </div>
         </div>
-        
-        <div class="w-1/3"></div> 
     </header>
 
-    <main class="flex-1 flex flex-col md:flex-row p-4 gap-4 h-full relative overflow-hidden">
-        
-        <aside class="glass-panel w-full md:w-[400px] rounded-xl p-5 flex flex-col z-10 relative overflow-hidden h-full">
-            
-            <div class="flex-shrink-0 flex flex-col gap-4">
-                
-                <div class="space-y-1.5 pb-4 border-b border-slate-700/50">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Perfil de Simulación</label>
-                    <select id="sim_profile" onchange="cambiarPerfil()" class="w-full px-4 py-2.5 bg-slate-900/80 border border-slate-600 hover:border-slate-500 rounded-lg text-sm text-slate-200 focus:ring-1 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-all cursor-pointer font-semibold">
-                        <option value="EU" selected>EU</option>
-                        <option value="LATAM">LATAM</option>
-                    </select>
-                </div>
+    <!-- Main Content -->
+    <main class="container" style="margin-top: 10px;">
 
-                <div class="space-y-1.5">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Importar de Google Maps</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="gmaps_url" placeholder="URL larga de Google Maps..." class="w-full px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:ring-1 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-all">
-                        <button onclick="extraerDeMaps()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="space-y-1.5">
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Delimitar Zona (KML)</label>
-                    <input type="file" id="kml_upload" accept=".kml" class="hidden" onchange="cargarKML(event)">
-                    <label for="kml_upload" class="w-full bg-slate-900/50 hover:bg-slate-800 text-slate-300 hover:text-green-400 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center cursor-pointer border border-slate-600 border-dashed group">
-                        <svg class="w-4 h-4 mr-2 group-hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                        Seleccionar polígono .kml
-                    </label>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 mt-1">
-                    <div class="space-y-1.5">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Latitud</label>
-                        <input type="number" id="lat" class="w-full px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-sm text-slate-200 focus:ring-1 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-all font-mono">
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Longitud</label>
-                        <input type="number" id="lon" class="w-full px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-sm text-slate-200 focus:ring-1 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-all font-mono">
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1.5">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Land Cover (Bosques)</label>
-                        <select id="land_cover" class="w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700 hover:border-slate-500 rounded-lg text-sm text-slate-200 focus:ring-1 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-all cursor-pointer font-semibold">
-                            <option value="1">ON</option>
-                            <option value="0" selected>OFF</option>
-                        </select>
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Altura Antena (m)</label>
-                        <input type="number" id="tx_height" value="3" class="w-full px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-sm text-slate-200 focus:ring-1 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-all font-mono">
-                    </div>
-                </div>
-
-                <button id="btnSimular" onclick="realizarSimulacion()" class="mt-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold py-3 px-4 rounded-lg glow-hover transition-all duration-300 flex justify-center items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    Iniciar Simulación
-                </button>
-
-                <div id="loader" class="hidden flex-col items-center justify-center py-2">
-                    <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-green-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <p class="text-[10px] text-green-400/80 font-bold animate-pulse uppercase tracking-widest">Procesando modelo ITM...</p>
-                </div>
+        <!-- Quick Summary Metrics -->
+        <section class="summary-grid">
+            <div class="card-stat">
+                <i class="fa-solid fa-scale-balanced icon-bg"></i>
+                <span class="title">Último Peso</span>
+                <span class="value" id="stat-last-weight">-- kg</span>
+                <span class="subtitle" id="stat-weight-inc">+0 g/día</span>
             </div>
-
-            <div id="historyArea" class="flex-1 flex flex-col min-h-0 border-t border-slate-700/50 pt-4 mt-4">
-                <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex-shrink-0">Historial de Análisis</h3>
-                
-                <p id="emptyHistoryMsg" class="text-slate-500 text-sm italic text-center mt-2 flex-shrink-0">Ninguna simulación activa.</p>
-                
-                <div id="simulationList" class="flex-1 overflow-y-auto pr-2 flex flex-col gap-2.5">
-                </div>
+            <div class="card-stat">
+                <i class="fa-solid fa-ruler-vertical icon-bg"></i>
+                <span class="title">Última Talla</span>
+                <span class="value" id="stat-last-height">-- cm</span>
+                <span class="subtitle" id="stat-height-date">Sin registros</span>
             </div>
-
-            <div id="admin-tools" class="flex-shrink-0 pt-4 mt-2 border-t border-slate-700/50">
-                <button onclick="descargarHtmlParaCliente()" class="w-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white font-medium py-2.5 px-4 rounded-lg border border-slate-600 transition-all text-sm flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 00-5.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                    Generar Acceso Cliente (2 Usos)
-                </button>
+            <div class="card-stat">
+                <i class="fa-solid fa-bottle-droplet icon-bg"></i>
+                <span class="title">Tomas Hoy</span>
+                <span class="value" id="stat-today-feedings">0</span>
+                <span class="subtitle" id="stat-today-ml">0 ml totales</span>
             </div>
-
-        </aside>
-
-        <section class="flex-1 bg-slate-900 rounded-xl shadow-2xl relative h-full overflow-hidden border border-slate-800">
-            <div id="map"></div>
+            <div class="card-stat">
+                <i class="fa-solid fa-baby icon-bg"></i>
+                <span class="title">Pañales Hoy</span>
+                <span class="value" id="stat-today-diapers">0</span>
+                <span class="subtitle" id="stat-last-diaper">Último: --:--</span>
+            </div>
         </section>
-        
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('peso')">
+                <i class="fa-solid fa-weight-scale"></i> Peso
+            </button>
+            <button class="tab-btn" onclick="switchTab('altura')">
+                <i class="fa-solid fa-ruler-vertical"></i> Altura
+            </button>
+            <button class="tab-btn" onclick="switchTab('tomas')">
+                <i class="fa-solid fa-bottle-droplet"></i> Tomas
+            </button>
+            <button class="tab-btn" onclick="switchTab('panales')">
+                <i class="fa-solid fa-baby"></i> Pañales
+            </button>
+        </nav>
+
+        <!-- TAB: PESO -->
+        <div id="tab-peso" class="tab-content active">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Anotar Peso</h2>
+                </div>
+                <form id="form-weight" onsubmit="handleAddWeight(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Fecha y Hora</label>
+                            <input type="datetime-local" id="weight-datetime" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Peso en Gramos (ej. 3450)</label>
+                            <input type="number" id="weight-value" class="form-control" placeholder="g" min="500" max="25000" step="5" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fa-solid fa-floppy-disk"></i> Guardar Peso</button>
+                </form>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-chart-line" style="color: var(--primary);"></i> Evolución de Peso</h2>
+                </div>
+                <div class="chart-box">
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Histórico & Incrementos</h2>
+                </div>
+                <div class="history-list" id="weight-history"></div>
+            </div>
+        </div>
+
+        <!-- TAB: ALTURA -->
+        <div id="tab-altura" class="tab-content">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Anotar Talla / Altura</h2>
+                </div>
+                <form id="form-height" onsubmit="handleAddHeight(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Fecha y Hora</label>
+                            <input type="datetime-local" id="height-datetime" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Altura en Centímetros (cm)</label>
+                            <input type="number" id="height-value" class="form-control" placeholder="ej. 52.5" min="30" max="120" step="0.1" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fa-solid fa-floppy-disk"></i> Guardar Talla</button>
+                </form>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-chart-line" style="color: var(--primary);"></i> Curva de Crecimiento</h2>
+                </div>
+                <div class="chart-box">
+                    <canvas id="heightChart"></canvas>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Histórico de Talla</h2>
+                </div>
+                <div class="history-list" id="height-history"></div>
+            </div>
+        </div>
+
+        <!-- TAB: TOMAS -->
+        <div id="tab-tomas" class="tab-content">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Anotar Toma</h2>
+                </div>
+                <form id="form-feeding" onsubmit="handleAddFeeding(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Fecha y Hora</label>
+                            <input type="datetime-local" id="feeding-datetime" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Toma</label>
+                            <div class="pill-selector">
+                                <button type="button" class="pill-btn active" id="pill-bibe" onclick="selectFeedingType('biberon')">🍾 Biberón</button>
+                                <button type="button" class="pill-btn" id="pill-pecho" onclick="selectFeedingType('pecho')">🤱 Pecho</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campos Biberon -->
+                    <div id="feeding-biberon-fields" class="form-grid">
+                        <div class="form-group">
+                            <label>Cantidad en Mililitros (ml)</label>
+                            <input type="number" id="feeding-ml" class="form-control" placeholder="ej. 90" step="5">
+                        </div>
+                    </div>
+
+                    <!-- Campos Pecho -->
+                    <div id="feeding-pecho-fields" class="form-grid" style="display: none;">
+                        <div class="form-group">
+                            <label>Lado del Pecho</label>
+                            <select id="feeding-side" class="form-control">
+                                <option value="Izquierdo">Izquierdo 👈</option>
+                                <option value="Derecho">Derecho 👉</option>
+                                <option value="Ambos">Ambos Pechos 👈👉</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Duración (Minutos)</label>
+                            <input type="number" id="feeding-duration" class="form-control" placeholder="ej. 15" min="1">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="margin-top: 10px;"><i class="fa-solid fa-floppy-disk"></i> Registrar Toma</button>
+                </form>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Tomas Recientes</h2>
+                </div>
+                <div class="history-list" id="feeding-history"></div>
+            </div>
+        </div>
+
+        <!-- TAB: PAÑALES -->
+        <div id="tab-panales" class="tab-content">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Anotar Pañal</h2>
+                </div>
+                <form id="form-diaper" onsubmit="handleAddDiaper(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Fecha y Hora</label>
+                            <input type="datetime-local" id="diaper-datetime" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado del Pañal</label>
+                            <select id="diaper-type" class="form-control" required>
+                                <option value="Pipí 💦">Pipí 💦</option>
+                                <option value="Caca 💩">Caca 💩</option>
+                                <option value="Pipí y Caca 💦💩">Pipí y Caca 💦💩</option>
+                                <option value="Limpio / Seco 🧼">Limpio / Seco 🧼</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label>Notas opcionales</label>
+                        <input type="text" id="diaper-notes" class="form-control" placeholder="ej. Consistencia normal, poco pipí...">
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fa-solid fa-floppy-disk"></i> Registrar Pañal</button>
+                </form>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Histórico de Pañales</h2>
+                </div>
+                <div class="history-list" id="diaper-history"></div>
+            </div>
+        </div>
+
     </main>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
+    <!-- Modal Config / Firebase -->
+    <div class="modal-backdrop" id="modal-config">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-gear"></i> Configuración</h3>
+                <button style="background:none; border:none; font-size:1.2rem; cursor:pointer;" onclick="closeConfigModal()">✕</button>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label>Nombre del Bebé</label>
+                <input type="text" id="config-baby-name" class="form-control" placeholder="ej. Mateo">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Fecha de Nacimiento</label>
+                <input type="date" id="config-baby-birth" class="form-control">
+            </div>
+
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid #eee;">
+
+            <h4 style="font-size:1rem; margin-bottom: 8px;">☁️ Sincronizar en Pareja (Firebase)</h4>
+            
+            <div class="firebase-help">
+                Para ver los cambios simultáneamente en ambos móviles gratis: crea un proyecto gratis en <b>firebase.google.com</b>, añade una Web App y pega la configuración JSON aquí.
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label>Firebase Config (JSON format)</label>
+                <textarea id="config-firebase-json" class="form-control" rows="5" style="font-family: monospace; font-size: 0.75rem;" placeholder='{
+  "apiKey": "...",
+  "authDomain": "...",
+  "projectId": "..."
+}'></textarea>
+            </div>
+
+            <button type="button" class="btn-submit" onclick="saveConfiguration()"><i class="fa-solid fa-check"></i> Guardar Ajustes</button>
+        </div>
+    </div>
+
+    <!-- Toast Component -->
+    <div class="toast" id="toast-msg">
+        <i class="fa-solid fa-circle-check" style="color: #2ecc71;"></i>
+        <span id="toast-text">Guardado correctamente</span>
+    </div>
+
+    <!-- Firebase SDK (Modular) CDN -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        window.db = null;
+        window.fbAddDoc = addDoc;
+        window.fbDeleteDoc = deleteDoc;
+        window.fbDoc = doc;
+        window.fbCollection = collection;
+
+        window.initFirebase = function(configJson) {
+            try {
+                const config = JSON.parse(configJson);
+                const app = initializeApp(config);
+                window.db = getFirestore(app);
+                document.getElementById('sync-indicator').classList.remove('offline');
+                document.getElementById('sync-status-text').innerText = 'Sincronizado en la nube (Firebase)';
+                listenToCloudData();
+                showToast('Conectado a Firebase correctamente');
+            } catch (err) {
+                console.error("Firebase error:", err);
+                document.getElementById('sync-indicator').classList.add('offline');
+                document.getElementById('sync-status-text').innerText = 'Error en Config Firebase';
+            }
+        };
+
+        function listenToCloudData() {
+            if (!window.db) return;
+
+            const collections = ['weights', 'heights', 'feedings', 'diapers'];
+            collections.forEach(colName => {
+                const q = query(collection(window.db, colName));
+                onSnapshot(q, (snapshot) => {
+                    const data = [];
+                    snapshot.forEach((doc) => {
+                        data.push({ id: doc.id, ...doc.data() });
+                    });
+                    localStorage.setItem(`baby_${colName}`, JSON.stringify(data));
+                    window.refreshAppUI();
+                });
+            });
+        }
+    </script>
+
+    <!-- Main Logic Script -->
     <script>
-        // =======================================================================
-        // 🔒 URL DEL PROXY DE CLOUDFLARE (Tu API KEY está 100% oculta en el backend)
-        // =======================================================================
-        const PROXY_URL = "https://ixorigue.small-leaf-5935.workers.dev";
-        
-        const EMBEDDED_DEMO_TOKEN = ""; 
-        const LIMITE_USOS = 2;
-        
-        let simulaciones = []; 
-        let simCounter = 1;
+        // State variables
+        let babyConfig = {
+            name: "Mi Bebé",
+            birthdate: new Date().toISOString().split('T')[0],
+            firebaseConfig: ""
+        };
 
-        let geojsonKMLActual = null;
-        let etiquetaCoberturaActual = null; 
-        let capaKMLActual = null;
-        let inputMarker;
+        let currentFeedingType = 'biberon';
+        let weightChartInstance = null;
+        let heightChartInstance = null;
 
-        // Configuración Modo Demo Cliente
-        if (EMBEDDED_DEMO_TOKEN !== "") {
-            document.getElementById('admin-tools').style.display = 'none';
-            let usos = parseInt(localStorage.getItem('uso_demo_' + EMBEDDED_DEMO_TOKEN) || '0');
-            actualizarBannerCliente(usos);
-        }
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            setCurrentDates();
+            refreshAppUI();
 
-        // Lógica automática de Land Cover al cambiar de perfil
-        function cambiarPerfil() {
-            const perfil = document.getElementById('sim_profile').value;
-            const selectLandCover = document.getElementById('land_cover');
-            if (perfil === 'EU') {
-                selectLandCover.value = "0"; // EU: OFF por defecto
-            } else {
-                selectLandCover.value = "1"; // LATAM: ON por defecto
+            // Check if Firebase is configured
+            if (babyConfig.firebaseConfig) {
+                setTimeout(() => {
+                    if (window.initFirebase) window.initFirebase(babyConfig.firebaseConfig);
+                }, 500);
             }
-        }
-
-        function descargarHtmlParaCliente() {
-            const tokenCliente = "cliente_" + Math.random().toString(36).substring(2, 10);
-            let codigoFuente = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-            const regexToken = /const\s+EMBEDDED_DEMO_TOKEN\s*=\s*["']["']\s*;/;
-            if (!regexToken.test(codigoFuente)) return alert("Error de empaquetado.");
-            codigoFuente = codigoFuente.replace(regexToken, `const EMBEDDED_DEMO_TOKEN = "${tokenCliente}";`);
-            const blob = new Blob([codigoFuente], { type: 'text/html' });
-            const urlDescarga = URL.createObjectURL(blob);
-            const linkTemporal = document.createElement('a');
-            linkTemporal.href = urlDescarga;
-            linkTemporal.download = 'simulador_rf_cliente.html';
-            document.body.appendChild(linkTemporal);
-            linkTemporal.click();
-            document.body.removeChild(linkTemporal);
-            URL.revokeObjectURL(urlDescarga);
-        }
-
-        function actualizarBannerCliente(usos) {
-            const restantes = LIMITE_USOS - usos;
-            const banner = document.getElementById('demo-banner');
-            const btnSimular = document.getElementById('btnSimular');
-            banner.classList.remove('hidden');
-            if (restantes > 0) {
-                banner.innerHTML = `MODO PRUEBA CLIENTE — QUEDAN ${restantes} SIMULACIONES`;
-            } else {
-                banner.className = "bg-red-900/80 text-red-300 border-b border-red-500/50 w-full text-center py-2 text-xs font-semibold tracking-wide shadow-md z-20 relative uppercase";
-                banner.innerHTML = `LÍMITE DE PRUEBA ALCANZADO. CONTACTE A SU DISTRIBUIDOR.`;
-                btnSimular.disabled = true;
-                btnSimular.classList.replace('from-green-600', 'from-slate-700');
-                btnSimular.classList.replace('to-emerald-600', 'to-slate-800');
-                btnSimular.classList.replace('hover:from-green-500', 'cursor-not-allowed');
-                btnSimular.classList.remove('glow-hover');
-            }
-        }
-
-        // Setup inicial de Leaflet
-        const map = L.map('map').setView([42.025, 1.669], 13);
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 19
-        }).addTo(map);
-
-        const neonOrangeIcon = L.divIcon({
-            className: 'neon-orange-pin', 
-            html: `
-                <svg width="32" height="42" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <ellipse cx="16" cy="38" rx="8" ry="3" fill="black" fill-opacity="0.3"/>
-                    <path d="M16 1C7.71573 1 1 7.71573 1 16C1 26 16 41 16 41C16 41 31 26 31 16C31 7.71573 24.2843 1 16 1Z" fill="white"/>
-                    <path d="M16 3C8.8203 3 3 8.8203 3 16C3 24.7 16 38.3 16 38.3C16 38.3 29 24.7 29 16C29 8.8203 23.1797 3 16 3Z" fill="#ff7e00"/>
-                    <circle cx="16" cy="16" r="5" fill="white"/>
-                </svg>
-            `,
-            iconSize: [32, 42],
-            iconAnchor: [16, 41]
         });
 
-        map.on('click', function(e) { colocarMarcador(e.latlng.lat, e.latlng.lng); });
-
-        function colocarMarcador(lat, lon) {
-            const latFixed = parseFloat(lat).toFixed(6);
-            const lonFixed = parseFloat(lon).toFixed(6);
-            document.getElementById('lat').value = latFixed;
-            document.getElementById('lon').value = lonFixed;
+        function loadConfig() {
+            const saved = localStorage.getItem('baby_config');
+            if (saved) {
+                babyConfig = JSON.parse(saved);
+            }
+            document.getElementById('baby-name-display').innerText = (babyConfig.name || "Mi Bebé") + " 🍼";
+            document.getElementById('config-baby-name').value = babyConfig.name || "";
+            document.getElementById('config-baby-birth').value = babyConfig.birthdate || "";
+            document.getElementById('config-firebase-json').value = babyConfig.firebaseConfig || "";
             
-            if(inputMarker) { map.removeLayer(inputMarker); }
-            inputMarker = L.marker([latFixed, lonFixed], { icon: neonOrangeIcon, opacity: 0.9 }).addTo(map);
-            map.panTo([latFixed, lonFixed]);
+            updateAgeDisplay();
         }
 
-        function extraerDeMaps() {
-            const url = document.getElementById('gmaps_url').value;
-            if (!url) return;
-            let match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) || url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
-            if (match) {
-                colocarMarcador(match[1], match[2]);
-                document.getElementById('gmaps_url').value = ''; 
+        function updateAgeDisplay() {
+            if (!babyConfig.birthdate) return;
+            const birth = new Date(babyConfig.birthdate);
+            const now = new Date();
+            const diffTime = Math.abs(now - birth);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            const weeks = Math.floor(diffDays / 7);
+            const remainingDays = diffDays % 7;
+            
+            let text = `${diffDays} días de vida`;
+            if (weeks > 0) {
+                text += ` (${weeks} sem ${remainingDays}d)`;
+            }
+            document.getElementById('baby-age-display').innerText = text;
+        }
+
+        function setCurrentDates() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const nowIso = now.toISOString().slice(0,16);
+
+            document.getElementById('weight-datetime').value = nowIso;
+            document.getElementById('height-datetime').value = nowIso;
+            document.getElementById('feeding-datetime').value = nowIso;
+            document.getElementById('diaper-datetime').value = nowIso;
+        }
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            event.currentTarget.classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+
+            if (tabId === 'peso' && weightChartInstance) weightChartInstance.resize();
+            if (tabId === 'altura' && heightChartInstance) heightChartInstance.resize();
+        }
+
+        // Feeding Type Selector
+        function selectFeedingType(type) {
+            currentFeedingType = type;
+            const btnBibe = document.getElementById('pill-bibe');
+            const btnPecho = document.getElementById('pill-pecho');
+            const fieldsBibe = document.getElementById('feeding-biberon-fields');
+            const fieldsPecho = document.getElementById('feeding-pecho-fields');
+
+            if (type === 'biberon') {
+                btnBibe.classList.add('active');
+                btnPecho.classList.remove('active');
+                fieldsBibe.style.display = 'grid';
+                fieldsPecho.style.display = 'none';
             } else {
-                alert("No se encontraron coordenadas en el enlace.");
+                btnPecho.classList.add('active');
+                btnBibe.classList.remove('active');
+                fieldsBibe.style.display = 'none';
+                fieldsPecho.style.display = 'grid';
             }
         }
 
-        function cargarKML(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                procesarKML(e.target.result, file.name);
-            };
-            reader.readAsText(file);
-        }
-
-        function procesarKML(kmlText, fileName) {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(kmlText, "text/xml");
-            
-            let coordinatesList = xmlDoc.getElementsByTagNameNS("*", "coordinates");
-            if (coordinatesList.length === 0) {
-                coordinatesList = xmlDoc.getElementsByTagName("coordinates");
-            }
-
-            if (coordinatesList.length === 0) {
-                alert("No se encontraron coordenadas en este archivo KML.");
-                return;
-            }
-
-            if (capaKMLActual) map.removeLayer(capaKMLActual);
-            if (etiquetaCoberturaActual) map.removeLayer(etiquetaCoberturaActual);
-
-            capaKMLActual = L.featureGroup().addTo(map);
-            let boundsGeneral = L.latLngBounds();
-            let poligonosEncontrados = 0;
-            
-            let featuresKML = [];
-
-            for (let i = 0; i < coordinatesList.length; i++) {
-                const coordsText = coordinatesList[i].textContent;
-                const tuples = coordsText.match(/-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?(?:,-?\d+(?:\.\d+)?)?/g);
-                
-                if (tuples && tuples.length > 0) {
-                    const latLngs = [];
-                    const turfCoords = [];
-
-                    tuples.forEach(tuple => {
-                        const parts = tuple.split(',');
-                        const lon = parseFloat(parts[0]); 
-                        const lat = parseFloat(parts[1]);
-                        if (!isNaN(lat) && !isNaN(lon)) {
-                            latLngs.push([lat, lon]); 
-                            turfCoords.push([lon, lat]);
-                            boundsGeneral.extend([lat, lon]);
-                        }
-                    });
-
-                    if (latLngs.length > 2) {
-                        const polygon = L.polygon(latLngs, {
-                            color: '#ec4899',       
-                            weight: 3,              
-                            opacity: 1,
-                            fillColor: '#ec4899',   
-                            fillOpacity: 0.1,      
-                            dashArray: '8, 8',
-                            interactive: false 
-                        });
-                        
-                        capaKMLActual.addLayer(polygon);
-                        poligonosEncontrados++;
-
-                        if (turfCoords[0][0] !== turfCoords[turfCoords.length-1][0] || turfCoords[0][1] !== turfCoords[turfCoords.length-1][1]) {
-                            turfCoords.push(turfCoords[0]);
-                        }
-                        featuresKML.push(turf.polygon([turfCoords]));
-                    }
+        // Save Local or Cloud
+        async function saveData(collectionName, item) {
+            if (window.db) {
+                try {
+                    await window.fbAddDoc(window.fbCollection(window.db, collectionName), item);
+                } catch(e) {
+                    console.error("Cloud save error:", e);
                 }
-            }
-
-            if (poligonosEncontrados > 0 && boundsGeneral.isValid()) {
-                map.fitBounds(boundsGeneral);
-                geojsonKMLActual = featuresKML.length === 1 ? featuresKML[0] : turf.featureCollection(featuresKML);
-                actualizarInterfazGlobal(); 
             } else {
-                alert("No se pudo dibujar el polígono.");
-                geojsonKMLActual = null;
+                const existing = JSON.parse(localStorage.getItem(`baby_${collectionName}`) || '[]');
+                item.id = Date.now().toString();
+                existing.push(item);
+                localStorage.setItem(`baby_${collectionName}`, JSON.stringify(existing));
+                refreshAppUI();
             }
-            document.getElementById('kml_upload').value = ''; 
+            showToast('Registro guardado');
         }
 
-        function puntoCaeEnKML(pt) {
-            if (!geojsonKMLActual) return false;
-            if (geojsonKMLActual.type === 'FeatureCollection') {
-                for (let i = 0; i < geojsonKMLActual.features.length; i++) {
-                    if (turf.booleanPointInPolygon(pt, geojsonKMLActual.features[i])) return true;
-                }
-                return false;
-            }
-            return turf.booleanPointInPolygon(pt, geojsonKMLActual);
-        }
-
-        function obtenerMallaDinamica() {
-            const areaKm2 = turf.area(geojsonKMLActual) / 1000000;
-            let gridSpacing = Math.sqrt(areaKm2 / 3000); 
-            if (gridSpacing < 0.03) gridSpacing = 0.03;  
-            if (gridSpacing > 0.5) gridSpacing = 0.5;    
-            return turf.pointGrid(turf.bbox(geojsonKMLActual), gridSpacing, {units: 'kilometers'});
-        }
-
-        function calcularPorcentajeLocal(boundsSimulacion, imageUrl) {
-            return new Promise((resolve) => {
-                if (!geojsonKMLActual || !boundsSimulacion) return resolve(null);
-
-                const img = new Image();
-                img.crossOrigin = "Anonymous"; 
-                img.src = imageUrl;
-
-                img.onload = function() {
+        async function deleteDataItem(collectionName, id) {
+            if (confirm("¿Estás seguro de eliminar este registro?")) {
+                if (window.db) {
                     try {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width; canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-
-                        const s = boundsSimulacion[0][0], w = boundsSimulacion[0][1];
-                        const n = boundsSimulacion[1][0], e = boundsSimulacion[1][1];
-
-                        const grid = obtenerMallaDinamica();
-                        let puntosFinca = 0;
-                        let puntosConSenal = 0;
-
-                        turf.featureEach(grid, function (pt) {
-                            if (puntoCaeEnKML(pt)) {
-                                puntosFinca++;
-                                const ptLon = pt.geometry.coordinates[0];
-                                const ptLat = pt.geometry.coordinates[1];
-
-                                if (ptLat >= s && ptLat <= n && ptLon >= w && ptLon <= e) {
-                                    const pctX = (ptLon - w) / (e - w);
-                                    const pctY = (n - ptLat) / (n - s); 
-                                    const pixelX = Math.floor(pctX * img.width);
-                                    const pixelY = Math.floor(pctY * img.height);
-
-                                    if (pixelX >= 0 && pixelX < img.width && pixelY >= 0 && pixelY < img.height) {
-                                        if (ctx.getImageData(pixelX, pixelY, 1, 1).data[3] > 10) {
-                                            puntosConSenal++;
-                                        }
-                                    }
-                                }
-                            }
-                        });
-
-                        if (puntosFinca === 0) return resolve(0);
-                        resolve(parseFloat(((puntosConSenal / puntosFinca) * 100).toFixed(1)));
-                    } catch (err) { resolve(null); }
-                };
-                img.onerror = () => resolve(null);
-            });
-        }
-
-        async function calcularPorcentajeGlobal() {
-            if (!geojsonKMLActual || simulaciones.length === 0) return null;
-
-            const activas = simulaciones.filter(s => s.visible && s.imageUrl && s.bounds);
-            if (activas.length === 0) return 0;
-
-            const canvases = await Promise.all(activas.map(sim => {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.crossOrigin = "Anonymous";
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width; canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        resolve({ ctx, imgWidth: img.width, imgHeight: img.height, bounds: sim.bounds });
-                    };
-                    img.onerror = () => resolve(null);
-                    img.src = sim.imageUrl;
-                });
-            }));
-
-            const validCanvases = canvases.filter(c => c !== null);
-            if(validCanvases.length === 0) return 0;
-
-            const grid = obtenerMallaDinamica();
-            let puntosFinca = 0;
-            let puntosCubiertos = 0;
-
-            turf.featureEach(grid, function (pt) {
-                if (puntoCaeEnKML(pt)) {
-                    puntosFinca++;
-                    const ptLon = pt.geometry.coordinates[0];
-                    const ptLat = pt.geometry.coordinates[1];
-                    let cubierto = false;
-
-                    for (let c of validCanvases) {
-                        const s = c.bounds[0][0], w = c.bounds[0][1];
-                        const n = c.bounds[1][0], e = c.bounds[1][1];
-
-                        if (ptLat >= s && ptLat <= n && ptLon >= w && ptLon <= e) {
-                            const pctX = (ptLon - w) / (e - w);
-                            const pctY = (n - ptLat) / (n - s); 
-                            const pixelX = Math.floor(pctX * c.imgWidth);
-                            const pixelY = Math.floor(pctY * c.imgHeight);
-
-                            if (pixelX >= 0 && pixelX < c.imgWidth && pixelY >= 0 && pixelY < c.imgHeight) {
-                                if (c.ctx.getImageData(pixelX, pixelY, 1, 1).data[3] > 10) {
-                                    cubierto = true;
-                                    break; 
-                                }
-                            }
-                        }
-                    }
-                    if (cubierto) puntosCubiertos++;
+                        await window.fbDeleteDoc(window.fbDoc(window.db, collectionName, id));
+                    } catch(e) { console.error(e); }
+                } else {
+                    let existing = JSON.parse(localStorage.getItem(`baby_${collectionName}`) || '[]');
+                    existing = existing.filter(i => i.id !== id);
+                    localStorage.setItem(`baby_${collectionName}`, JSON.stringify(existing));
+                    refreshAppUI();
                 }
-            });
-
-            if (puntosFinca === 0) return 0;
-            return parseFloat(((puntosCubiertos / puntosFinca) * 100).toFixed(1));
+                showToast('Registro eliminado');
+            }
         }
 
-        async function actualizarInterfazGlobal() {
-            if (!geojsonKMLActual) {
-                if (etiquetaCoberturaActual) map.removeLayer(etiquetaCoberturaActual);
-                renderizarHistorial(null);
+        // Handlers
+        function handleAddWeight(e) {
+            e.preventDefault();
+            const datetime = document.getElementById('weight-datetime').value;
+            const value = parseFloat(document.getElementById('weight-value').value);
+
+            if (!value) return;
+
+            saveData('weights', { datetime, value, timestamp: new Date(datetime).getTime() });
+            document.getElementById('weight-value').value = '';
+        }
+
+        function handleAddHeight(e) {
+            e.preventDefault();
+            const datetime = document.getElementById('height-datetime').value;
+            const value = parseFloat(document.getElementById('height-value').value);
+
+            if (!value) return;
+
+            saveData('heights', { datetime, value, timestamp: new Date(datetime).getTime() });
+            document.getElementById('height-value').value = '';
+        }
+
+        function handleAddFeeding(e) {
+            e.preventDefault();
+            const datetime = document.getElementById('feeding-datetime').value;
+            
+            let item = {
+                datetime,
+                type: currentFeedingType,
+                timestamp: new Date(datetime).getTime()
+            };
+
+            if (currentFeedingType === 'biberon') {
+                item.ml = parseInt(document.getElementById('feeding-ml').value) || 0;
+            } else {
+                item.side = document.getElementById('feeding-side').value;
+                item.duration = parseInt(document.getElementById('feeding-duration').value) || 0;
+            }
+
+            saveData('feedings', item);
+            document.getElementById('feeding-ml').value = '';
+            document.getElementById('feeding-duration').value = '';
+        }
+
+        function handleAddDiaper(e) {
+            e.preventDefault();
+            const datetime = document.getElementById('diaper-datetime').value;
+            const type = document.getElementById('diaper-type').value;
+            const notes = document.getElementById('diaper-notes').value;
+
+            saveData('diapers', { datetime, type, notes, timestamp: new Date(datetime).getTime() });
+            document.getElementById('diaper-notes').value = '';
+        }
+
+        // UI Refresh Coordinator
+        window.refreshAppUI = function() {
+            renderWeightSection();
+            renderHeightSection();
+            renderFeedingSection();
+            renderDiaperSection();
+            updateDashboardStats();
+        };
+
+        // Render Weights & Calculations
+        function renderWeightSection() {
+            const data = JSON.parse(localStorage.getItem('baby_weights') || '[]')
+                .sort((a,b) => a.timestamp - b.timestamp);
+
+            const container = document.getElementById('weight-history');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-weight-scale"></i><p>Aún no hay pesajes registrados</p></div>';
+                renderWeightChart([]);
                 return;
             }
 
-            const globalPct = await calcularPorcentajeGlobal();
-            if (etiquetaCoberturaActual) map.removeLayer(etiquetaCoberturaActual);
+            // Calculate daily & weekly gains
+            for (let i = data.length - 1; i >= 0; i--) {
+                const current = data[i];
+                let subtext = '';
 
-            if (globalPct !== null) {
-                const centroTurf = turf.center(geojsonKMLActual);
-                const coordsCentro = [centroTurf.geometry.coordinates[1], centroTurf.geometry.coordinates[0]];
+                if (i > 0) {
+                    const prev = data[i - 1];
+                    const diffGrams = current.value - prev.value;
+                    const diffDays = (current.timestamp - prev.timestamp) / (1000 * 60 * 60 * 24);
+                    
+                    if (diffDays > 0) {
+                        const dailyGain = Math.round(diffGrams / diffDays);
+                        const weeklyGain = Math.round(dailyGain * 7);
+                        const sign = dailyGain >= 0 ? '+' : '';
+                        subtext = `<span style="color:${dailyGain >= 0 ? '#27ae60':'#e74c3c'}; font-weight:600;">
+                            ${sign}${dailyGain} g/día (${sign}${weeklyGain} g/sem)
+                        </span>`;
+                    }
+                } else {
+                    subtext = 'Primer registro';
+                }
 
-                let htmlTxt = `<div style="text-align:center; font-family:'Inter',sans-serif; font-weight:800; text-shadow:-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0px 4px 10px rgba(0,0,0,0.8);">`;
-                htmlTxt += `<div style="color:#ef4444; font-size:17px;">Global: ${globalPct}%</div></div>`;
+                const dateStr = new Date(current.datetime).toLocaleString('es-ES', { dateStyle:'short', timeStyle:'short' });
 
-                etiquetaCoberturaActual = L.marker(coordsCentro, {
-                    icon: L.divIcon({
-                        className: 'cobertura-badge',
-                        html: htmlTxt,
-                        iconSize: [0, 0],
-                        iconAnchor: [40, 20]
-                    })
-                }).addTo(map);
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div class="item-details">
+                        <span class="item-title">${(current.value / 1000).toFixed(2)} kg (${current.value} g)</span>
+                        <span class="item-sub">${dateStr} • ${subtext}</span>
+                    </div>
+                    <div>
+                        <button class="btn-delete" onclick="deleteDataItem('weights', '${current.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(div);
             }
-            
-            renderizarHistorial(globalPct);
+
+            renderWeightChart(data);
         }
 
-        function renderizarHistorial(globalPct = null) {
-            const lista = document.getElementById('simulationList');
-            const msg = document.getElementById('emptyHistoryMsg');
-            
-            if (msg) msg.style.display = simulaciones.length > 0 ? 'none' : 'block';
-            lista.innerHTML = '';
-            
-            [...simulaciones].reverse().forEach(sim => {
-                const checkedStr = sim.visible ? 'checked' : '';
-                
-                let statsHtml = '';
-                if (sim.coberturaLocal !== null && sim.coberturaLocal !== undefined) {
-                    statsHtml += `<span class="text-[#ff7e00] font-bold" title="Cobertura de esta zona">Loc: ${sim.coberturaLocal}%</span>`;
-                }
-                if (globalPct !== null && sim.visible) {
-                    if (statsHtml !== '') statsHtml += `<span class="text-slate-500 mx-1.5">|</span>`;
-                    statsHtml += `<span class="text-red-500 font-bold" title="Cobertura total acumulada">Glb: ${globalPct}%</span>`;
-                }
-                
-                if (statsHtml === '') {
-                    statsHtml = `<span class="text-slate-400 font-medium">Análisis de espectro listo</span>`;
-                }
-                
-                const itemHtml = `
-                <div class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 shadow-sm flex items-center justify-between gap-3 group hover:border-slate-600 transition-colors">
-                    <div class="relative inline-block w-9 mr-1 align-middle select-none flex-shrink-0">
-                        <input type="checkbox" id="toggle_${sim.id}" onchange="toggleCapa(${sim.id}, this.checked)" ${checkedStr} class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-slate-200 border-2 border-slate-600 appearance-none cursor-pointer transition-all duration-300 z-10 top-0.5 left-0.5"/>
-                        <label for="toggle_${sim.id}" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer transition-colors duration-300"></label>
+        // Render Heights
+        function renderHeightSection() {
+            const data = JSON.parse(localStorage.getItem('baby_heights') || '[]')
+                .sort((a,b) => a.timestamp - b.timestamp);
+
+            const container = document.getElementById('height-history');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-ruler-vertical"></i><p>Aún no hay mediciones registradas</p></div>';
+                renderHeightChart([]);
+                return;
+            }
+
+            for (let i = data.length - 1; i >= 0; i--) {
+                const current = data[i];
+                const dateStr = new Date(current.datetime).toLocaleString('es-ES', { dateStyle:'short', timeStyle:'short' });
+
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div class="item-details">
+                        <span class="item-title">${current.value} cm</span>
+                        <span class="item-sub">${dateStr}</span>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-slate-200 truncate" title="${sim.name}">${sim.name}</p>
-                        <div class="text-[11px] mt-0.5">${statsHtml}</div>
+                    <div>
+                        <button class="btn-delete" onclick="deleteDataItem('heights', '${current.id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
-                    <a href="${sim.kmz}" target="_blank" title="Descargar KMZ" class="bg-slate-700 hover:bg-green-600 text-slate-300 hover:text-white p-2 rounded-md transition-colors flex-shrink-0">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    </a>
-                </div>`;
-                lista.insertAdjacentHTML('beforeend', itemHtml);
+                `;
+                container.appendChild(div);
+            }
+
+            renderHeightChart(data);
+        }
+
+        // Render Feedings
+        function renderFeedingSection() {
+            const data = JSON.parse(localStorage.getItem('baby_feedings') || '[]')
+                .sort((a,b) => b.timestamp - a.timestamp);
+
+            const container = document.getElementById('feeding-history');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-bottle-droplet"></i><p>No hay tomas anotadas</p></div>';
+                return;
+            }
+
+            data.forEach(item => {
+                const dateStr = new Date(item.datetime).toLocaleString('es-ES', { dateStyle:'short', timeStyle:'short' });
+                let detailsText = item.type === 'biberon' ? `🍾 Biberón: ${item.ml} ml` : `🤱 Pecho ${item.side}: ${item.duration} min`;
+
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.style.borderLeftColor = item.type === 'biberon' ? '#7c9ebc' : '#f4acb7';
+                div.innerHTML = `
+                    <div class="item-details">
+                        <span class="item-title">${detailsText}</span>
+                        <span class="item-sub">${dateStr}</span>
+                    </div>
+                    <div>
+                        <button class="btn-delete" onclick="deleteDataItem('feedings', '${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(div);
             });
         }
 
-        async function toggleCapa(id, isVisible) {
-            const sim = simulaciones.find(s => s.id === id);
-            if (sim && sim.layerGroup) {
-                sim.visible = isVisible;
-                if (isVisible) map.addLayer(sim.layerGroup);
-                else map.removeLayer(sim.layerGroup);
-                
-                document.getElementById('loader').classList.remove('hidden');
-                await actualizarInterfazGlobal(); 
-                document.getElementById('loader').classList.add('hidden');
+        // Render Diapers
+        function renderDiaperSection() {
+            const data = JSON.parse(localStorage.getItem('baby_diapers') || '[]')
+                .sort((a,b) => b.timestamp - a.timestamp);
+
+            const container = document.getElementById('diaper-history');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fa-solid fa-baby"></i><p>No hay registro de pañales</p></div>';
+                return;
+            }
+
+            data.forEach(item => {
+                const dateStr = new Date(item.datetime).toLocaleString('es-ES', { dateStyle:'short', timeStyle:'short' });
+
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.style.borderLeftColor = '#fbe7c6';
+                div.innerHTML = `
+                    <div class="item-details">
+                        <span class="item-title">${item.type}</span>
+                        <span class="item-sub">${dateStr} ${item.notes ? '• ' + item.notes : ''}</span>
+                    </div>
+                    <div>
+                        <button class="btn-delete" onclick="deleteDataItem('diapers', '${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Calculate and display top stats
+        function updateDashboardStats() {
+            // Weight Stats
+            const weights = JSON.parse(localStorage.getItem('baby_weights') || '[]')
+                .sort((a,b) => a.timestamp - b.timestamp);
+            
+            if (weights.length > 0) {
+                const last = weights[weights.length - 1];
+                document.getElementById('stat-last-weight').innerText = `${(last.value / 1000).toFixed(2)} kg`;
+
+                if (weights.length > 1) {
+                    const prev = weights[weights.length - 2];
+                    const diffG = last.value - prev.value;
+                    const diffD = (last.timestamp - prev.timestamp) / (1000 * 60 * 60 * 24);
+                    if (diffD > 0) {
+                        const daily = Math.round(diffG / diffD);
+                        document.getElementById('stat-weight-inc').innerText = `${daily >= 0 ? '+':''}${daily} g/día`;
+                    }
+                }
+            }
+
+            // Height Stats
+            const heights = JSON.parse(localStorage.getItem('baby_heights') || '[]')
+                .sort((a,b) => a.timestamp - b.timestamp);
+            
+            if (heights.length > 0) {
+                const last = heights[heights.length - 1];
+                document.getElementById('stat-last-height').innerText = `${last.value} cm`;
+                const dateStr = new Date(last.datetime).toLocaleDateString('es-ES');
+                document.getElementById('stat-height-date').innerText = `Medido el ${dateStr}`;
+            }
+
+            // Today Feedings Stats
+            const feedings = JSON.parse(localStorage.getItem('baby_feedings') || '[]');
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayFeedings = feedings.filter(f => f.datetime && f.datetime.startsWith(todayStr));
+            
+            const totalMl = todayFeedings.reduce((acc, curr) => acc + (curr.ml || 0), 0);
+            document.getElementById('stat-today-feedings').innerText = todayFeedings.length;
+            document.getElementById('stat-today-ml').innerText = `${totalMl} ml totales`;
+
+            // Today Diapers Stats
+            const diapers = JSON.parse(localStorage.getItem('baby_diapers') || '[]')
+                .sort((a,b) => b.timestamp - a.timestamp);
+            const todayDiapers = diapers.filter(d => d.datetime && d.datetime.startsWith(todayStr));
+
+            document.getElementById('stat-today-diapers').innerText = todayDiapers.length;
+            if (diapers.length > 0) {
+                const lastD = new Date(diapers[0].datetime);
+                const timeStr = lastD.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                document.getElementById('stat-last-diaper').innerText = `Último: ${timeStr}`;
             }
         }
-        
-        async function realizarSimulacion() {
-            if (EMBEDDED_DEMO_TOKEN !== "") {
-                let usos = parseInt(localStorage.getItem('uso_demo_' + EMBEDDED_DEMO_TOKEN) || '0');
-                if (usos >= LIMITE_USOS) return; 
-            }
 
-            const lat = document.getElementById('lat').value;
-            const lon = document.getElementById('lon').value;
-            const txHeight = document.getElementById('tx_height').value;
-            const perfilActivo = document.getElementById('sim_profile').value;
-            const landCover = parseInt(document.getElementById('land_cover').value);
+        // Chart Renderers
+        function renderWeightChart(data) {
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            
+            const labels = data.map(d => new Date(d.datetime));
+            const values = data.map(d => d.value / 1000); // kg
 
-            if (!lat || !lon) return alert("Faltan coordenadas. Haz clic en el mapa.");
+            if (weightChartInstance) weightChartInstance.destroy();
 
-            document.getElementById('btnSimular').classList.add('hidden');
-            document.getElementById('loader').classList.remove('hidden');
-
-            try {
-                let payload = {};
-
-                // PAYLOAD DINÁMICO SEGÚN PERFIL Y LAND COVER AUTOMÁTICO
-                if (perfilActivo === 'EU') {
-                    // MAPEO DEL PERFIL EU (Tal como estaba antes)
-                    payload = {
-                        site: "Simulador EU", network: "Demo",
-                        transmitter: {
-                            lat: parseFloat(lat), lon: parseFloat(lon),
-                            alt: parseFloat(txHeight), frq: 868, // Frecuencia fija EU
-                            txw: 0.025, bwi: 0.1              
+            weightChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Peso (kg)',
+                        data: values,
+                        borderColor: '#7c9ebc',
+                        backgroundColor: 'rgba(124, 158, 188, 0.15)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#587996',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: { unit: 'day', displayFormats: { day: 'dd MMM' } },
+                            grid: { display: false }
                         },
-                        receiver: { alt: 1, rxg: 1, rxs: -120 },
-                        antenna: { txg: 4.3, txl: 1.14, ant: 1, pol: "v" },
-                        model: { pm: 1, pe: 3, cli: 1, rel: 80, ked: 1 },
-                        environment: { ele: 1, cll: landCover, clb: 0 }, // Toma ON/OFF del UI
-                        output: { res: 10, rad: 10, fmt: "kmz", out: 2, col: "LORA.dBm" }
-                    };
-                } else {
-                    // MAPEO EXACTO DEL PERFIL Custom-Argentina DE TUS CAPTURAS
-                    payload = {
-                        site: "Simulador LATAM", network: "Demo",
-                        transmitter: {
-                            lat: parseFloat(lat), lon: parseFloat(lon),
-                            alt: parseFloat(txHeight), frq: 915, // Frecuencia fija Argentina
-                            txw: 0.025, bwi: 0.1              
-                        },
-                        receiver: { alt: 1, rxg: 1, rxs: -120 }, // Sensibilidad -120 (Captura Mobile)
-                        antenna: { txg: 4.3, txl: 1.14, ant: 1, pol: "v" }, // Feeder Loss 1.14 y Ganancia 4.3 (Capturas Feeder/Antenna)
-                        model: { pm: 1, pe: 3, cli: 1, rel: 80, ked: 1 }, // Motor ITM (Captura Model)
-                        environment: { ele: 1, cll: landCover, clb: 0 }, // Toma ON/OFF del UI
-                        output: { res: 10, rad: 8, fmt: "kmz", out: 2, col: "LORA.dBm" } // Radio 8Km (Captura Output) y Colores LoRa
-                    };
-                }
-
-                // Enviar la petición al backend secreto de Cloudflare
-                const response = await fetch(PROXY_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.kmz) {
-                    
-                    if (EMBEDDED_DEMO_TOKEN !== "") {
-                        let usos = parseInt(localStorage.getItem('uso_demo_' + EMBEDDED_DEMO_TOKEN) || '0');
-                        usos++;
-                        localStorage.setItem('uso_demo_' + EMBEDDED_DEMO_TOKEN, usos);
-                        actualizarBannerCliente(usos);
-                    }
-
-                    let elementosGrupo = [];
-                    let pinSimulacion = L.marker([parseFloat(lat), parseFloat(lon)], {icon: neonOrangeIcon});
-                    
-                    pinSimulacion.bindTooltip(
-                        `<div class="text-white text-sm" style="margin-bottom:1px;">Punto ${simCounter}</div><div class="text-[#ff7e00] text-[11px]">${geojsonKMLActual ? 'Calculando...' : 'Señal activa'}</div>`, 
-                        { permanent: true, direction: 'top', className: 'pin-tooltip', offset: [0, -35] }
-                    );
-
-                    elementosGrupo.push(pinSimulacion);
-
-                    let imageUrl = data.PNG_WGS84 || data.png || data.PNG_Mercator;
-                    let boundsLeaflet = null;
-
-                    if (imageUrl && data.bounds) {
-                        try {
-                            if (Array.isArray(data.bounds[0])) {
-                                const b = data.bounds[0];
-                                boundsLeaflet = [[b[2], b[3]], [b[0], b[1]]]; 
-                            } else {
-                                const n = data.bounds[0], e = data.bounds[1], s = data.bounds[2], w = data.bounds[3];
-                                boundsLeaflet = [[s, w], [n, e]]; 
-                            }
-                            let capaColor = L.imageOverlay(imageUrl, boundsLeaflet, { opacity: 0.65 });
-                            elementosGrupo.push(capaColor);
-                        } catch(err) {
-                            console.warn("Fallo leve al procesar la imagen:", err);
+                        y: {
+                            title: { display: true, text: 'Kg' },
+                            grid: { color: '#f1f5f9' }
                         }
                     }
-
-                    let capaGrupo = L.layerGroup(elementosGrupo).addTo(map);
-                    if (boundsLeaflet) {
-                        try { map.fitBounds(boundsLeaflet); } catch(e) {}
-                    }
-
-                    if(inputMarker) map.removeLayer(inputMarker);
-
-                    let porcentajeLocal = null;
-                    if (geojsonKMLActual && boundsLeaflet && imageUrl) {
-                        porcentajeLocal = await calcularPorcentajeLocal(boundsLeaflet, imageUrl);
-                    }
-
-                    let tooltipHtml = `<div class="text-white text-[15px]" style="margin-bottom:1px;">Punto ${simCounter}</div>`;
-                    if (porcentajeLocal !== null) {
-                        tooltipHtml += `<div class="text-[#ff7e00] text-[14px]">Local: ${porcentajeLocal}%</div>`;
-                    }
-                    pinSimulacion.setTooltipContent(tooltipHtml);
-
-                    simulaciones.push({
-                        id: Date.now(),
-                        name: `Punto ${simCounter}`,
-                        freq: perfilActivo === 'EU' ? 868 : 915,
-                        alt: txHeight,
-                        kmz: data.kmz,
-                        layerGroup: capaGrupo,
-                        visible: true,
-                        coberturaLocal: porcentajeLocal, 
-                        imageUrl: imageUrl,              
-                        bounds: boundsLeaflet            
-                    });
-                    
-                    simCounter++;
-                    
-                    await actualizarInterfazGlobal();
-
-                } else {
-                    alert("Error en la simulación: " + (data.error || "Revisa la consola."));
                 }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Hubo un fallo de red o error de API.");
-            } finally {
-                document.getElementById('btnSimular').classList.remove('hidden');
-                document.getElementById('loader').classList.add('hidden');
+            });
+        }
+
+        function renderHeightChart(data) {
+            const ctx = document.getElementById('heightChart').getContext('2d');
+            
+            const labels = data.map(d => new Date(d.datetime));
+            const values = data.map(d => d.value);
+
+            if (heightChartInstance) heightChartInstance.destroy();
+
+            heightChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Talla (cm)',
+                        data: values,
+                        borderColor: '#f4acb7',
+                        backgroundColor: 'rgba(244, 172, 183, 0.15)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.2,
+                        pointBackgroundColor: '#d88391',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: { unit: 'day', displayFormats: { day: 'dd MMM' } },
+                            grid: { display: false }
+                        },
+                        y: {
+                            title: { display: true, text: 'cm' },
+                            grid: { color: '#f1f5f9' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Modal Logic
+        function openConfigModal() {
+            document.getElementById('modal-config').classList.add('active');
+        }
+
+        function closeConfigModal() {
+            document.getElementById('modal-config').classList.remove('active');
+        }
+
+        function saveConfiguration() {
+            babyConfig.name = document.getElementById('config-baby-name').value;
+            babyConfig.birthdate = document.getElementById('config-baby-birth').value;
+            babyConfig.firebaseConfig = document.getElementById('config-firebase-json').value;
+
+            localStorage.setItem('baby_config', JSON.stringify(babyConfig));
+            
+            loadConfig();
+            closeConfigModal();
+            showToast('Configuración guardada');
+
+            if (babyConfig.firebaseConfig && window.initFirebase) {
+                window.initFirebase(babyConfig.firebaseConfig);
             }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-msg');
+            document.getElementById('toast-text').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
     </script>
 </body>
